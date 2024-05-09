@@ -129,6 +129,7 @@ export default function ItemPost() {
     await updateUser();
     const userData = await getUserInfo();
 
+    console.log("userdata: ", userData);
     const data = {
       barcode: barcode,
       product_name: itemNameValue,
@@ -157,7 +158,7 @@ export default function ItemPost() {
       if (!response.ok) {
         throw new Error("Failed to send data to server");
       } else {
-        // router.push("/itemPost");
+        router.push("/refrigerator");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -169,7 +170,7 @@ export default function ItemPost() {
       <div className="flex items-center justify-between px-6 mt-1">
         <div className="cursor-pointer" onClick={handleBackClick}>
           <Image
-            src="/back.svg"
+            src="/refIcon/back.svg"
             width={9}
             height={18}
             alt="backImg"
@@ -208,7 +209,7 @@ export default function ItemPost() {
                 onClick={handleCancel}
               >
                 <Image
-                  src="/cancel.svg"
+                  src="/refIcon/cancel.svg"
                   width={24}
                   height={24}
                   alt="cancelImg"
@@ -226,7 +227,7 @@ export default function ItemPost() {
       </div>
       <div className="px-6">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/date.svg" width={24} height={24} alt="dateImg" />
+          <Image src="/refIcon/date.svg" width={24} height={24} alt="dateImg" />
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -256,7 +257,7 @@ export default function ItemPost() {
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
             <Image
-              src="/quantity.svg"
+              src="/refIcon/quantity.svg"
               width={24}
               height={24}
               alt="quantityImg"
@@ -265,7 +266,7 @@ export default function ItemPost() {
           </div>
           <div className="flex items-center justify-end flex-grow gap-2">
             <Image
-              src="/minus.svg"
+              src="/refIcon/minus.svg"
               width={24}
               height={24}
               alt="minusImg"
@@ -274,7 +275,7 @@ export default function ItemPost() {
             />
             <p>{quantity}</p>
             <Image
-              src="/plus.svg"
+              src="/refIcon/plus.svg"
               width={24}
               height={24}
               alt="plusImg"
@@ -286,7 +287,7 @@ export default function ItemPost() {
 
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center w-full ">
-            <Image src="/tag.svg" width={24} height={24} alt="tagImg" />
+            <Image src="/refIcon/tag.svg" width={24} height={24} alt="tagImg" />
             {hashtagsArr.map((tag, index) => (
               <div
                 key={index}
@@ -309,7 +310,12 @@ export default function ItemPost() {
 
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image src="/keep.svg" width={24} height={24} alt="keepImg" />
+            <Image
+              src="/refIcon/keep.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
             <p className="text-base pl-[15px]">보관 방법</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -325,7 +331,7 @@ export default function ItemPost() {
           </div>
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300  px-2.5 py-2.5">
-          <Image src="/memo.svg" width={24} height={24} alt="memoImg" />
+          <Image src="/refIcon/memo.svg" width={24} height={24} alt="memoImg" />
           <Input
             className="w-[330px] shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
             placeholder="메모를 입력해주세요."

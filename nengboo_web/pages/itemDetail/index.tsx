@@ -200,7 +200,7 @@ export default function ItemDetail() {
       if (error) {
         throw new Error("Failed to send data to server");
       } else {
-        // router.push("/itemPost");
+        router.push("/refrigerator");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -208,7 +208,7 @@ export default function ItemDetail() {
   };
 
   const handleBackClick = () => {
-    // router.push("/itemPost");
+    router.push("/refrigerator");
   };
 
   const handleTrashClick = () => {
@@ -230,7 +230,7 @@ export default function ItemDetail() {
         throw new Error("Failed to send data to server");
       } else {
         setShowModal(false);
-        router.push("/itemPost");
+        router.push("/refrigerator");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -241,13 +241,18 @@ export default function ItemDetail() {
     <div>
       <div className="flex items-center justify-between px-6 mt-1">
         <div className=" cursor-pointer" onClick={handleBackClick}>
-          <Image src="/back.svg" width={9} height={18} alt="backImg" />
+          <Image src="/refIcon/back.svg" width={9} height={18} alt="backImg" />
         </div>
         <h2 className="text-neutral-900 text-2xl font-bold">상품 상세정보</h2>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <div onClick={handleTrashClick} className="cursor-pointer">
-              <Image src="/delete.svg" width={34} height={34} alt="deleteImg" />
+              <Image
+                src="/refIcon/delete.svg"
+                width={34}
+                height={34}
+                alt="deleteImg"
+              />
             </div>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -275,11 +280,21 @@ export default function ItemDetail() {
         <p className="text-zinc-800 text-xs font-normal">{createdDate}</p>
       </div>
       <div className="flex items-center justify-center">
-        <Image src="/dummyImg.svg" width={130} height={135} alt="dummyImg" />
+        <Image
+          src="/refIcon/dummyImg.svg"
+          width={130}
+          height={135}
+          alt="dummyImg"
+        />
       </div>
       <div className="px-6 pt-[39px]">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/itemName.svg" width={24} height={24} alt="itemNameImg" />
+          <Image
+            src="/refIcon/itemName.svg"
+            width={24}
+            height={24}
+            alt="itemNameImg"
+          />
           <Input
             className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
             type="text"
@@ -289,7 +304,7 @@ export default function ItemDetail() {
           />
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/date.svg" width={24} height={24} alt="dateImg" />
+          <Image src="/refIcon/date.svg" width={24} height={24} alt="dateImg" />
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -319,7 +334,7 @@ export default function ItemDetail() {
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
             <Image
-              src="/quantity.svg"
+              src="/refIcon/quantity.svg"
               width={24}
               height={24}
               alt="quantityImg"
@@ -328,7 +343,7 @@ export default function ItemDetail() {
           </div>
           <div className="flex items-center justify-end flex-grow gap-2">
             <Image
-              src="/minus.svg"
+              src="/refIcon/minus.svg"
               width={24}
               height={24}
               alt="minusImg"
@@ -337,7 +352,7 @@ export default function ItemDetail() {
             />
             <p>{quantity}</p>
             <Image
-              src="/plus.svg"
+              src="/refIcon/plus.svg"
               width={24}
               height={24}
               alt="plusImg"
@@ -349,7 +364,7 @@ export default function ItemDetail() {
 
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center w-full ">
-            <Image src="/tag.svg" width={24} height={24} alt="tagImg" />
+            <Image src="/refIcon/tag.svg" width={24} height={24} alt="tagImg" />
             {hashtagsArr.map((tag, index) => (
               <div
                 key={index}
@@ -371,7 +386,12 @@ export default function ItemDetail() {
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image src="/keep.svg" width={24} height={24} alt="keepImg" />
+            <Image
+              src="/refIcon/keep.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
             <p className="text-base pl-[15px]">보관 방법</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -387,7 +407,7 @@ export default function ItemDetail() {
           </div>
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/memo.svg" width={24} height={24} alt="memoImg" />
+          <Image src="/refIcon/memo.svg" width={24} height={24} alt="memoImg" />
           <Input
             className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
             placeholder="메모를 입력해주세요."
@@ -399,7 +419,8 @@ export default function ItemDetail() {
       </div>
       <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
-          <Link href="/itemPost">취소</Link>
+          {/* <Link href="/itemPost">취소</Link> */}
+          취소
         </Button>
         <Button
           className="flex-grow bg-personal-blue h-14 text-base"
