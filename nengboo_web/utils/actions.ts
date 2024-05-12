@@ -1,5 +1,6 @@
 import { supabase } from "@/utils/supabase";
 import { sendMessage } from "./message";
+import OpenAI from "openai";
 
 export const googleLogin = async () => {
   sendMessage({ message: "login" });
@@ -115,4 +116,55 @@ export const insertRefrige = async () => {
       else console.log("insertRefrige >>>", error);
     }
   }
+};
+
+export const getProductList = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: ref_id, error } = await supabase
+    .from("refrigerators")
+    .select("refrige_id")
+    .eq("user_id", user.identities[0].identity_data.provider_id);
+  if (!!ref_id) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("product_name")
+      .eq("refrige_id", ref_id[0].refrige_id);
+
+    if (!error) {
+      console.log(data);
+      return data;
+    } else console.log("getProdcutList >>>", error);
+  } else console.log("getProdcutList (ref_id) >>>", error);
+};
+
+export const getGPTRecipe = async () => {
+  let parse = "";
+  const data = await getProductList();
+  console.log("data >>>", data);
+  if (!!data) {
+    data.map((e) => {
+      parse += e.product_name + " ";
+    });
+  }
+  const openai = new OpenAI({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    messages: [
+      {
+        role: "user",
+        content: `${parse}들어간 레시피 1개를 '레시피 이름, 재료, 조리방법'만 추천하고 인사하지마`,
+      },
+    ],
+    temperature: 0,
+    max_tokens: 1000,
+  });
+  console.log(response);
+  return response.choices[0].message.content;
 };

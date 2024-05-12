@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import arrowLeft from "@/public/arrowLeft.svg";
 import search from "@/public/search.svg";
+import { getGPTRecipe } from "@/utils/actions";
 
 const index = () => {
+  const [recipe, setRecipe] = useState<string>();
+
+  useEffect(() => {
+    const init = async () => {
+      const data = await getGPTRecipe();
+      setRecipe(data);
+    };
+    init();
+  }, []);
+
+  const check = () => {
+    const init = async () => {
+      const data = await getGPTRecipe();
+      setRecipe(data);
+    };
+    init();
+    console.log(recipe);
+  };
+  const check1 = () => {
+    console.log(recipe);
+  };
   return (
     <main>
       <SearchBar />
@@ -44,6 +66,12 @@ const index = () => {
             200kcal/svg
           </div>
         </div>
+      </div>
+      <div>
+        <button onClick={check}>console</button>
+      </div>
+      <div>
+        <button onClick={check1}>console1</button>
       </div>
     </main>
   );
