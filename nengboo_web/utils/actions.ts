@@ -122,22 +122,23 @@ export const getProductList = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!!user && !!user.identities && !!user.identities[0].identity_data) {
+    const { data: ref_id, error } = await supabase
+      .from("refrigerators")
+      .select("refrige_id")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
+    if (!!ref_id) {
+      const { data, error } = await supabase
+        .from("products")
+        .select("product_name")
+        .eq("refrige_id", ref_id[0].refrige_id);
 
-  const { data: ref_id, error } = await supabase
-    .from("refrigerators")
-    .select("refrige_id")
-    .eq("user_id", user.identities[0].identity_data.provider_id);
-  if (!!ref_id) {
-    const { data, error } = await supabase
-      .from("products")
-      .select("product_name")
-      .eq("refrige_id", ref_id[0].refrige_id);
-
-    if (!error) {
-      console.log(data);
-      return data;
-    } else console.log("getProdcutList >>>", error);
-  } else console.log("getProdcutList (ref_id) >>>", error);
+      if (!error) {
+        console.log(data);
+        return data;
+      } else console.log("getProdcutList >>>", error);
+    } else console.log("getProdcutList (ref_id) >>>", error);
+  } else console.log("getProdcutList >>> userError");
 };
 
 export const getGPTRecipe = async () => {
@@ -159,7 +160,7 @@ export const getGPTRecipe = async () => {
     messages: [
       {
         role: "user",
-        content: `${parse}들어간 레시피 1개를 '레시피 이름, 재료, 조리방법'만 추천하고 인사하지마`,
+        content: `${parse}들어간 레시피 1개를 '레시피 이름, 재료, 조리방법, 레시피 영어이름'만 추천하고 인사하지마`,
       },
     ],
     temperature: 0,
@@ -167,4 +168,15 @@ export const getGPTRecipe = async () => {
   });
   console.log(response);
   return response.choices[0].message.content;
+};
+
+export const getRecipeImage = async (query: string) => {
+  const Access_Key = process.env.NEXT_PUBLIC_ACCESS_KEY;
+  const response = await fetch(
+    `https://api.unsplash.com/search/photos?page=1&query=${query}&client_id=${Access_Key}&orientation=landscape&per_page=1`
+  );
+  const responseJson = await response.json();
+  const result = responseJson.results;
+  console.log("result >>>", result);
+  return result[0].urls.full;
 };

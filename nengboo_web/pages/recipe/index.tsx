@@ -2,85 +2,102 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import arrowLeft from "@/public/arrowLeft.svg";
-import search from "@/public/search.svg";
-import { getGPTRecipe } from "@/utils/actions";
+import { Checkbox } from "@/components/ui/checkbox";
+import { getGPTRecipe, getRecipeImage } from "@/utils/actions";
 
-const index = () => {
-  const [recipe, setRecipe] = useState<string>();
+const recipe = () => {
+  const [recipeName, setRecipeName] = useState<string>();
+  const [ingredient, setIngredient] = useState<string[]>();
+  const [cook, setCook] = useState<string[]>();
+  const [keyword, setKeyword] = useState<string>("");
+  const [recipeImage, setRecipeImage] = useState<string>();
+
+  const parseData = (recipeString: string) => {
+    const recipeNameRegex = /레시피 이름: (.*)\n/;
+    const recipeName = recipeString.match(recipeNameRegex)![1];
+
+    const ingredientsRegex = /재료: (.*)\n조리방법:/;
+    const ingredients = recipeString.match(ingredientsRegex)![1].split(", ");
+
+    const instructionsRegex = /조리방법: ((?:\d+\. .*?\n))/;
+    const instructions = recipeString
+      .match(instructionsRegex)![1]
+      .split(". ")
+      .filter((e) => e.length > 1);
+
+    const englishNameRegex = /레시피 영어이름: (.*)/;
+    const englishName = recipeString.match(englishNameRegex)![1];
+
+    setRecipeName(recipeName);
+    setKeyword(englishName);
+    setIngredient(ingredients);
+    setCook(instructions);
+  };
 
   useEffect(() => {
     const init = async () => {
       const data = await getGPTRecipe();
-      setRecipe(data);
+      parseData(data);
     };
     init();
   }, []);
 
-  const check = () => {
-    const init = async () => {
-      const data = await getGPTRecipe();
-      setRecipe(data);
-    };
-    init();
-    console.log(recipe);
-  };
-  const check1 = () => {
-    console.log(recipe);
-  };
-  return (
-    <main>
-      <SearchBar />
-      <div className="flex justify-around ">
-        <div className="w-[181px] h-[166px] relative bg-white rounded-[15px] shadow border border-black ">
-          <div className="left-0 top-0 absolute bg-stone-300 rounded-[15px] justify-end items-center inline-flex">
-            <img
-              className="w-[180px] h-[107px] rounded-[15px]"
-              src="https://via.placeholder.com/180x107"
-            />
-          </div>
-          <div className="w-[122px] h-[13px] left-[6px] top-[112px] absolute text-black text-sm font-medium">
-            레시피 이름
-          </div>
-          <div className="w-[169px] h-[13px] left-[6px] top-[130px] absolute text-zinc-800 text-xs font-extralight">
-            레시피 재료
-          </div>
-          <div className="w-[73px] h-[13px] left-[104px] top-[148px] absolute text-neutral-400 text-xs font-light">
-            200kcal/svg
-          </div>
-        </div>
+  useEffect(() => {
+    if (!keyword) return;
 
-        <div className="w-[181px] h-[166px] relative bg-white rounded-[15px] shadow border border-black">
-          <div className="left-0 top-0 absolute bg-stone-300 rounded-[15px] justify-end items-center inline-flex">
-            <img
-              className="w-[180px] h-[107px] rounded-[15px]"
-              src="https://via.placeholder.com/180x107"
-            />
-          </div>
-          <div className="w-[122px] h-[13px] left-[6px] top-[112px] absolute text-black text-sm font-medium">
-            레시피 이름
-          </div>
-          <div className="w-[169px] h-[13px] left-[6px] top-[130px] absolute text-zinc-800 text-xs font-extralight">
-            레시피 재료
-          </div>
-          <div className="w-[73px] h-[13px] left-[104px] top-[148px] absolute text-neutral-400 text-xs font-light">
-            200kcal/svg
-          </div>
-        </div>
+    const getImage = async () => {
+      const recipeImg = await getRecipeImage(keyword);
+      setRecipeImage(recipeImg);
+    };
+    getImage();
+  }, [keyword]);
+  return (
+    <main className="mx-6">
+      <Header />
+      <div className="flex items-center justify-center">
+        <img className="w-[334px] h-[334px]" src={recipeImage} />
       </div>
-      <div>
-        <button onClick={check}>console</button>
-      </div>
-      <div>
-        <button onClick={check1}>console1</button>
-      </div>
+
+      <p className="mt-6 text-neutral-900 text-2xl font-bold">{recipeName}</p>
+
+      <SubHeader title={"재료"} />
+      <ul>
+        {ingredient?.map((e) => (
+          <li className="flex items-center space-x-2" key={e}>
+            <Checkbox id="e" key={e} />
+            <label
+              htmlFor="terms1"
+              className="text-neutral-500 text-base font-medium "
+            >
+              {e}
+            </label>
+          </li>
+        ))}
+      </ul>
+
+      <SubHeader title={"조리법"} />
+      <ul>
+        {cook?.map((e) => (
+          <li className="flex items-center space-x-2" key={e}>
+            <Checkbox id="e" key={e} />
+            <label
+              htmlFor="terms1"
+              className="text-neutral-500 text-base font-medium "
+            >
+              {e}
+            </label>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 };
 
-const SearchBar = () => {
+const Header = () => {
   const router = useRouter();
+
   return (
-    <div className="flex items-center mt-14 mb-8">
+    <div className="flex mt-16 mb-14">
       <Image
         src={arrowLeft}
         alt="BackButton"
@@ -89,27 +106,27 @@ const SearchBar = () => {
         height={18}
         onClick={() => router.back()}
       />
-      <div className="relative flex-grow">
-        <input
-          type="text"
-          placeholder="레시피를 입력해주세요"
-          className="flex px-4 py-3 w-full justify-center items-center rounded-lg border border-1 border-gray-400 input-no-focus"
-          style={{
-            outline: "none",
-          }}
-          // value={value}
-          // onChange={onChange}
-        />
-        <Image
-          // onClick={onSearch}
-          src={search}
-          alt="Search"
-          width={24}
-          height={24}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-        />
+      <div className="relative grow justify-center">
+        <div className="text-neutral-900 text-2xl font-bold text-center">
+          AI 추천 레시피
+        </div>
       </div>
     </div>
   );
 };
-export default index;
+
+const SubHeader = (title: { title: string }) => {
+  return (
+    <div className="flex items-center justify-center mb-8">
+      <div className="w-[140px] h-9 p-2 bg-neutral-100 rounded-[100px] justify-center items-center gap-2.5 inline-flex mt-32">
+        <div className="w-[113px] h-[22px] justify-center items-center flex">
+          <p className="w-[113px] h-[22px] text-center text-neutral-800 text-xl font-medium ">
+            {title.title}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default recipe;
