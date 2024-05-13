@@ -248,7 +248,7 @@ export default function ItemDetail() {
           <AlertDialogTrigger asChild>
             <div onClick={handleTrashClick} className="cursor-pointer">
               <Image
-                src="/refIcon/delete.svg"
+                src="/refIcon/trash.svg"
                 width={34}
                 height={34}
                 alt="deleteImg"
@@ -419,8 +419,7 @@ export default function ItemDetail() {
       </div>
       <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
-          {/* <Link href="/itemPost">취소</Link> */}
-          취소
+          <Link href="/refrigerator">취소</Link>
         </Button>
         <Button
           className="flex-grow bg-personal-blue h-14 text-base"

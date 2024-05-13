@@ -80,6 +80,15 @@ export default function ItemPost() {
   };
 
   const handleSubmit = async () => {
+    if (!barcode) {
+      errors.product_expiration_date = "바코드를 입력하세요.";
+      toast({
+        className: "bg-zinc-100",
+        description: "바코드를 입력하세요.",
+      });
+      return;
+    }
+
     if (!itemNameValue || itemNameValue.trim() === "") {
       errors.product_name = "상품명을 입력하세요.";
       toast({
@@ -192,12 +201,23 @@ export default function ItemPost() {
           </div>
           <div>
             <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
-              <p className="pl-1">{barcode}</p>
+              <Input
+                className="w-[200px] h-[28px] shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                placeholder="바코드를 입력해주세요."
+                type="text"
+                value={barcode}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const newValue = value.replace(/[^\d]/g, "");
+                  setBarcode(newValue);
+                }}
+                required
+              />
             </div>
 
             <div className="flex w-[228px] h-[40.16px] bg-white rounded-lg border border-zinc-300 mb-2.5 text-sm">
               <Input
-                className="w-[150px] h-auto shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                className="w-[190px] h-auto shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 placeholder="상품명을 입력해주세요."
                 type="text"
                 value={itemNameValue}
