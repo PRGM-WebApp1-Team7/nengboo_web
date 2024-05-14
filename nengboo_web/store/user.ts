@@ -6,6 +6,7 @@ export interface User {
   user_email: string;
   user_name: string;
   user_create_day: string;
+  refrige_id: string;
 }
 
 interface UserState {
