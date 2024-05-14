@@ -208,7 +208,7 @@ export default function ItemDetail() {
   };
 
   const handleBackClick = () => {
-    router.push("/refrigerator");
+    router.back();
   };
 
   const handleTrashClick = () => {
