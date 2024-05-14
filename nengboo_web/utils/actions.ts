@@ -82,10 +82,17 @@ export const getUserInfo = async () => {
       .from("users")
       .select("*")
       .eq("user_id", user.identities[0].identity_data.provider_id);
-
+    const { data: ref_id, error: ref_error } = await supabase
+      .from("refrigerators")
+      .select("refrige_id")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
     if (!error) {
-      console.log(data);
-      return data;
+      const result = {
+        ...data[0],
+        ...ref_id[0],
+      };
+      console.log("result >>>", result);
+      return result;
     } else console.log("getUserInfo >>>", error);
   }
 };
