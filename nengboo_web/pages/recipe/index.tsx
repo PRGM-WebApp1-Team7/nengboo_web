@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { getGPTRecipe, getRecipeImage } from "@/utils/actions";
+import { getEnglishName, getGPTRecipe, getRecipeImage } from "@/utils/actions";
 import { parseData } from "@/utils/recipe";
 import { TextHeader } from "@/components/TextHeader";
 import { SubHeader } from "@/components/SubHeader";
@@ -16,10 +16,18 @@ const recipe = () => {
   useEffect(() => {
     const init = async () => {
       const data = await getGPTRecipe();
-      parseData(data, setRecipeName, setKeyword, setIngredient, setCook);
+      parseData(data, setRecipeName, setIngredient, setCook);
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (!recipeName) return;
+    const initEnglish = async () => {
+      await getEnglishName(recipeName, setKeyword);
+    };
+    initEnglish();
+  }, [recipeName]);
 
   useEffect(() => {
     if (!keyword) return;
@@ -53,7 +61,7 @@ const recipe = () => {
         ))}
       </ul>
 
-      <SubHeader title={"조리법"} />
+      <SubHeader title={"조리방법"} />
       <ul>
         {cook?.map((e) => (
           <li className="flex items-center space-x-2" key={e}>
