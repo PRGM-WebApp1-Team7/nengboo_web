@@ -29,7 +29,7 @@ const Refrigerator = () => {
           console.log(products)
         }
       } catch (error) {
-        console.error("물품 조회 에러: ", error.message)
+        console.error("물품 검색 에러: ", error.message)
       }
     }
 
@@ -62,7 +62,7 @@ const Refrigerator = () => {
         router.push(`/itemSearch?${product_id}`)
       }
     } catch (error) {
-      console.error("검색어를 불러오는 중 에러 발생: ", error.message)
+      console.error("검색어 불러오는 중 에러: ", error.message)
     }
   }
 
@@ -94,14 +94,16 @@ const Refrigerator = () => {
                   <div className="flex justify-between mt-2 text-center">
                     <p>{product.product_expiration_date}</p>
                     <p
-                      className={
-                        calculateDday(product.product_expiration_date) <= 7 ? "text-red-500" : ""
-                      }
+                      className={`${
+                        (calculateDday(product.product_expiration_date).includes("D-") &&
+                          parseInt(calculateDday(product.product_expiration_date).substring(2)) <=
+                            7) ||
+                        calculateDday(product.product_expiration_date).includes("D+")
+                          ? "text-red-500"
+                          : ""
+                      }`}
                     >
-                      D-
-                      {calculateDday(product.product_expiration_date) !== null
-                        ? calculateDday(product.product_expiration_date)
-                        : "N/A"}
+                      {calculateDday(product.product_expiration_date)}
                     </p>
                   </div>
                 </div>
