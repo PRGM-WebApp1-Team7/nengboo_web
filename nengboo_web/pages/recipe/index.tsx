@@ -6,7 +6,7 @@ import { parseData } from "@/utils/recipe";
 import { TextHeader } from "@/components/TextHeader";
 import { SubHeader } from "@/components/SubHeader";
 
-const recipe = () => {
+const Recipe = () => {
   const [recipeName, setRecipeName] = useState<string>("");
   const [ingredient, setIngredient] = useState<string[]>([]);
   const [cook, setCook] = useState<string[]>([]);
@@ -79,4 +79,4 @@ const recipe = () => {
   );
 };
 
-export default recipe;
+export default Recipe;

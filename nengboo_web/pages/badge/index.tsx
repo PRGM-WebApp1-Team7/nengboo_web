@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getUserInfo } from "@/utils/actions";
 import { BadgeIcon } from "@/components/badge/badgeIcon";
 
-const index = () => {
+const Badge = () => {
   const [isAcheived, setIsacheived] = useState({});
 
   useEffect(() => {
@@ -55,4 +55,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Badge;
