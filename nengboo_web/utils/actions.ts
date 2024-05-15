@@ -82,6 +82,22 @@ export const getUserStoreInfo = async () => {
       .from("users")
       .select("*")
       .eq("user_id", user.identities[0].identity_data.provider_id);
+    if (!error) {
+      console.log(data);
+      return data;
+    } else console.log("getUserInfo >>>", error);
+  }
+};
+
+export const getUserStoreInfo = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!!user && !!user.identities && !!user.identities[0].identity_data) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
     const { data: ref_id, error: ref_error } = await supabase
       .from("refrigerators")
       .select("refrige_id")
@@ -93,7 +109,7 @@ export const getUserStoreInfo = async () => {
       };
       console.log("result >>>", result);
       return result;
-    } else console.log("getUserInfo >>>", error);
+    } else console.log("getUserStoreInfo >>>", error);
   }
 };
 
