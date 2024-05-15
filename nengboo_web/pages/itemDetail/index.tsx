@@ -26,11 +26,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { getUserInfo, updateUser } from "@/utils/actions";
 
 export default function ItemDetail() {
   const [product, setProduct] = useState(null);
   const [createdDate, setCreatedDate] = useState("");
   const [itemNameValue, setItemNameValue] = useState("");
+  const [cookable, setCookable] = useState("");
   const [dateValue, setDateValue] = React.useState<Date | undefined>(
     new Date()
   );
@@ -50,6 +52,7 @@ export default function ItemDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log("cookable: ", cookable);
         // Supabase에서 데이터 조회
         const { data, error } = await supabase
           .from("products")
@@ -67,6 +70,8 @@ export default function ItemDetail() {
           .toString()
           .padStart(2, "0")}`;
 
+        setCookable(data.product_cookable); // 불린 값으로 설정
+        console.log("cookable: ", cookable);
         setCreatedDate(formattedDate);
         setItemNameValue(data.product_name);
         setDateValue(data.product_expiration_date);
@@ -93,6 +98,10 @@ export default function ItemDetail() {
       fetchProduct();
     }
   }, [product_id]);
+
+  const handleCookableChange = (e) => {
+    setCookable(e.target.value);
+  };
 
   const handleIncrement = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
@@ -177,8 +186,30 @@ export default function ItemDetail() {
       return;
     }
 
+    if (!cookable) {
+      errors.product_frozen_storage = "상품 카테고리를 선택하세요.";
+      toast({
+        className: "bg-zinc-100",
+        description: "상품 카테고리를 선택하세요.",
+      });
+      return;
+    }
+
+    await updateUser();
+    const userData = await getUserInfo();
+
+    const refId = await supabase
+      .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
+      .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
+      .eq("user_id", userData[0].user_id)
+      .single();
+
+    console.log("userdata: ", userData);
+
     const data = {
+      refrige_id: refId.data?.refrige_id,
       product_name: itemNameValue,
+      product_cookable: cookable,
       product_expiration_date: format(
         new Date(dateValue),
         "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
@@ -287,7 +318,7 @@ export default function ItemDetail() {
           alt="dummyImg"
         />
       </div>
-      <div className="px-6 pt-[39px]">
+      <div className="px-6 pt-[25px]">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <Image
             src="/refIcon/itemName.svg"
@@ -415,6 +446,27 @@ export default function ItemDetail() {
             value={memo}
             onChange={handleMemoChange}
           />
+        </div>
+        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
+          <div className="flex items-center">
+            <Image
+              src="/refIcon/category.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
+            <p className="text-base pl-[15px]">상품 카테고리</p>
+          </div>
+          <div className="flex items-center justify-end flex-grow">
+            <select
+              onChange={handleCookableChange}
+              value={cookable}
+              className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
+            >
+              <option value="ingredients">식재료</option>
+              <option value="finished">완제품</option>
+            </select>
+          </div>
         </div>
       </div>
       <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">

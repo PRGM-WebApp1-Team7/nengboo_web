@@ -19,13 +19,14 @@ import { useRouter } from "next/router";
 export default function ItemPost() {
   const [barcode, setBarcode] = useState("");
   const [itemNameValue, setItemNameValue] = useState("");
+  const [cookable, setCookable] = useState("ingredients");
   const [dateValue, setDateValue] = React.useState<Date | undefined>(
     new Date()
   );
   const [quantity, setQuantity] = useState(1);
   const [hashtag, setHashTag] = useState("");
   const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
-  const [keeping, setKeeping] = useState("light");
+  const [keeping, setKeeping] = useState("coldStorage");
   const [memo, setMemo] = useState("");
   const [errors, setErrors] = useState<any>({});
   const { toast } = useToast();
@@ -33,6 +34,10 @@ export default function ItemPost() {
 
   const handleCancel = () => {
     setItemNameValue("");
+  };
+
+  const handleCookableChange = (e) => {
+    setCookable(e.target.value);
   };
 
   const handleIncrement = () => {
@@ -134,6 +139,15 @@ export default function ItemPost() {
       return;
     }
 
+    if (!cookable) {
+      errors.product_frozen_storage = "상품 카테고리를 선택하세요.";
+      toast({
+        className: "bg-zinc-100",
+        description: "상품 카테고리를 선택하세요.",
+      });
+      return;
+    }
+
     //서버에 데이터 전송
     await updateUser();
     const userData = await getUserInfo();
@@ -142,6 +156,7 @@ export default function ItemPost() {
     const data = {
       barcode: barcode,
       product_name: itemNameValue,
+      product_cookable: cookable,
       product_expiration_date: format(
         new Date(dateValue),
         "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
@@ -350,7 +365,7 @@ export default function ItemPost() {
             </select>
           </div>
         </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300  px-2.5 py-2.5">
+        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300  px-2.5 py-2.5 mb-2.5">
           <Image src="/refIcon/memo.svg" width={24} height={24} alt="memoImg" />
           <Input
             className="w-[330px] shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
@@ -360,7 +375,30 @@ export default function ItemPost() {
             onChange={handleMemoChange}
           />
         </div>
+
+        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
+          <div className="flex items-center">
+            <Image
+              src="/refIcon/category.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
+            <p className="text-base pl-[15px]">상품 카테고리</p>
+          </div>
+          <div className="flex items-center justify-end flex-grow">
+            <select
+              onChange={handleCookableChange}
+              value={cookable}
+              className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
+            >
+              <option value="ingredients">식재료</option>
+              <option value="finished">완제품</option>
+            </select>
+          </div>
+        </div>
       </div>
+
       <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
           <Link href="/refrigerator">취소</Link>
