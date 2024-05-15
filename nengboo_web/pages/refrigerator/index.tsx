@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { updateUser, getProductList } from "@/utils/actions";
+import { getProductList } from "@/utils/actions";
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
 import SearchBar from "@/components/ui/SearchBar";
@@ -87,7 +87,7 @@ const Refrigerator = () => {
             <div
               key={product.product_id}
               className={`flex flex-col ${product.product_id !== 0 ? "mt-30" : ""}`}
-              onClick={() => router.push(`/itemDetail?${product.product_id}`)}
+              onClick={() => router.push(`/itemDetail?product_id=${product.product_id}`)}
             >
               <div>
                 <Image

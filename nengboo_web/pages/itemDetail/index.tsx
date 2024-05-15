@@ -256,7 +256,7 @@ export default function ItemDetail() {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <div onClick={handleTrashClick} className="cursor-pointer">
-              <Image src="/refIcon/trash.svg" width={34} height={34} alt="deleteImg" />
+              <Image src="/refIcon/delete.svg" width={34} height={34} alt="deleteImg" />
             </div>
           </AlertDialogTrigger>
           <AlertDialogContent>
