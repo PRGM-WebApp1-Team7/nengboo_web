@@ -13,14 +13,14 @@ const Badge = () => {
       const data = await getUserInfo();
       if (data) {
         setIsacheived({
-          attend: data[0].badge_attendance,
-          expday: data[0].badge_expiration_day,
-          meat: data[0].badge_meat,
-          vege: data[0].badge_vegetable,
-          fish: data[0].badge_fish,
-          milk: data[0].badge_milk,
-          refri: data[0].badge_refrigerator,
-          recipe: data[0].badge_recipe,
+          attend: data.badge_attendance,
+          expday: data.badge_expiration_day,
+          meat: data.badge_meat,
+          vege: data.badge_vegetable,
+          fish: data.badge_fish,
+          milk: data.badge_milk,
+          refri: data.badge_refrigerator,
+          recipe: data.badge_recipe,
         });
       }
     };

@@ -1,136 +1,189 @@
-import React, { useState, ChangeEvent, useCallback } from "react"
-import { Input } from "@/components/ui/input"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useUserStore } from "@/store/user"
-import { useToast } from "@/components/ui/use-toast"
-import { getUserInfo, updateUser } from "@/utils/actions"
-import { useRouter } from "next/router"
+import React, { useState, ChangeEvent, useCallback } from "react";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useUserStore } from "@/store/user";
+import { useToast } from "@/components/ui/use-toast";
+import { getUserInfo, updateUser } from "@/utils/actions";
+import { useRouter } from "next/router";
+import { supabase } from "@/utils/supabase";
 
 export default function ItemPost() {
-  const [barcode, setBarcode] = useState("")
-  const [itemNameValue, setItemNameValue] = useState("")
-  const [dateValue, setDateValue] = React.useState<Date | undefined>(new Date())
-  const [quantity, setQuantity] = useState(1)
-  const [hashtag, setHashTag] = useState("")
-  const [hashtagsArr, setHashtagsArr] = useState<string[]>([])
-  const [keeping, setKeeping] = useState("light")
-  const [memo, setMemo] = useState("")
-  const [errors, setErrors] = useState<any>({})
-  const { toast } = useToast()
-  const router = useRouter()
+  const [barcode, setBarcode] = useState("");
+  const [itemNameValue, setItemNameValue] = useState("");
+  const [dateValue, setDateValue] = React.useState<Date | undefined>(
+    new Date()
+  );
+  const [quantity, setQuantity] = useState(1);
+  const [hashtag, setHashTag] = useState("");
+  const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
+  const [keeping, setKeeping] = useState("light");
+  const [memo, setMemo] = useState("");
+  const [errors, setErrors] = useState<any>({});
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleCancel = () => {
-    setItemNameValue("")
-  }
+    setItemNameValue("");
+  };
 
   const handleIncrement = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1)
-  }
+    setQuantity((prevQuantity) => prevQuantity + 1);
+  };
 
   const handleDecrement = () => {
     if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1)
+      setQuantity((prevQuantity) => prevQuantity - 1);
     }
-  }
+  };
 
   const onChangeHashtag = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHashTag(e.target.value)
-  }
+    setHashTag(e.target.value);
+  };
 
   const onKeyUp = useCallback(
     (e: { keyCode: number }) => {
       if (e.keyCode === 13 && hashtag.trim() !== "") {
-        setHashtagsArr((prevHashtags) => [...prevHashtags, hashtag])
-        setHashTag("")
+        setHashtagsArr((prevHashtags) => [...prevHashtags, hashtag]);
+        setHashTag("");
       }
     },
     [hashtag]
-  )
+  );
 
   const removeHashtag = (indexToRemove: number) => {
-    setHashtagsArr((prevHashtags) => prevHashtags.filter((_, index) => index !== indexToRemove))
-  }
-  const handleSelectChange = (e: { target: { value: React.SetStateAction<string> } }) => {
+    setHashtagsArr((prevHashtags) =>
+      prevHashtags.filter((_, index) => index !== indexToRemove)
+    );
+  };
+  const handleSelectChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
     // 선택된 값으로 keeping 상태를 업데이트합니다.
-    setKeeping(e.target.value)
-  }
+    setKeeping(e.target.value);
+  };
 
   const handleMemoChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setMemo(event.target.value)
-  }
+    setMemo(event.target.value);
+  };
 
   const handleBackClick = () => {
     // router.push("/itemPost");
-  }
+  };
 
   const handleSubmit = async () => {
     if (!itemNameValue || itemNameValue.trim() === "") {
-      errors.product_name = "상품명을 입력하세요."
+      errors.product_name = "상품명을 입력하세요.";
       toast({
         className: "bg-zinc-100",
         description: "상품명을 입력하세요.",
-      })
-      return
+      });
+      return;
     }
 
     if (!dateValue) {
-      errors.product_expiration_date = "날짜를 선택하세요."
+      errors.product_expiration_date = "날짜를 선택하세요.";
       toast({
         className: "bg-zinc-100",
         description: "날짜를 선택하세요.",
-      })
-      return
+      });
+      return;
     }
 
     if (!quantity) {
-      errors.product_quantity = "수량을 입력하세요."
+      errors.product_quantity = "수량을 입력하세요.";
       toast({
         className: "bg-zinc-100",
         description: "수량을 입력하세요.",
-      })
-      return
+      });
+      return;
     }
 
     if (hashtagsArr.length === 0) {
-      errors.product_type = "태그를 입력하세요."
+      errors.product_type = "태그를 입력하세요.";
       toast({
         className: "bg-zinc-100",
         description: "태그를 입력하세요.",
-      })
-      return
+      });
+      return;
     }
 
     if (!keeping) {
-      errors.product_frozen_storage = "보관 방법을 선택하세요."
+      errors.product_frozen_storage = "보관 방법을 선택하세요.";
       toast({
         className: "bg-zinc-100",
         description: "보관 방법을 선택하세요.",
-      })
-      return
+      });
+      return;
     }
 
     //서버에 데이터 전송
-    await updateUser()
-    const userData = await getUserInfo()
+    await updateUser();
+    const userData = await getUserInfo();
 
     const data = {
       barcode: barcode,
       product_name: itemNameValue,
-      product_expiration_date: format(new Date(dateValue), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+      product_expiration_date: format(
+        new Date(dateValue),
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+      ),
       product_quantity: quantity,
       product_type: hashtagsArr,
       product_frozen_storage: keeping,
       product_memo: memo,
-      user_id: userData[0].user_id,
+      user_id: userData.user_id,
+      // 난주 수정
+      product_cookable: true,
+    };
+
+    // 배지 조건 업데이트
+    if (userData.badge_vegetable === false && hashtagsArr.includes("채소")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_vegetable: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
     }
 
-    console.log(JSON.stringify(data))
+    if (userData.badge_meat === false && hashtagsArr.includes("고기")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_meat: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData.badge_fish === false && hashtagsArr.includes("생선")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_fish: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData.badge_milk === false && hashtagsArr.includes("유제품")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_milk: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    console.log(JSON.stringify(data));
 
     try {
       const response = await fetch("/api/itemPost", {
@@ -139,17 +192,17 @@ export default function ItemPost() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to send data to server")
+        throw new Error("Failed to send data to server");
       } else {
         // router.push("/itemPost");
       }
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   return (
     <div>
@@ -169,7 +222,12 @@ export default function ItemPost() {
       <div className="px-6 pt-5">
         <div className="py-9 px-5 gap-4 flex items-center border-solid border border-border-color rounded-lg">
           <div>
-            <Image src="/dummyImg.svg" width={100} height={100} alt="dummyImg" />
+            <Image
+              src="/dummyImg.svg"
+              width={100}
+              height={100}
+              alt="dummyImg"
+            />
           </div>
           <div>
             <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
@@ -185,7 +243,10 @@ export default function ItemPost() {
                 onChange={(e) => setItemNameValue(e.target.value)}
                 required
               />
-              <div className="flex items-center justify-end flex-grow pr-2" onClick={handleCancel}>
+              <div
+                className="flex items-center justify-end flex-grow pr-2"
+                onClick={handleCancel}
+              >
                 <Image
                   src="/cancel.svg"
                   width={24}
@@ -199,7 +260,9 @@ export default function ItemPost() {
         </div>
       </div>
       <div className="px-6 py-4">
-        <h2 className="text-neutral-700 text-sm font-normaltext-sm">상품 정보</h2>
+        <h2 className="text-neutral-700 text-sm font-normaltext-sm">
+          상품 정보
+        </h2>
       </div>
       <div className="px-6">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
@@ -213,17 +276,31 @@ export default function ItemPost() {
                   !dateValue && "text-muted-foreground"
                 )}
               >
-                {dateValue ? format(dateValue, "yyyy-MM-dd") : <span>날짜를 선택하세요.</span>}
+                {dateValue ? (
+                  format(dateValue, "yyyy-MM-dd")
+                ) : (
+                  <span>날짜를 선택하세요.</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={dateValue} onSelect={setDateValue} initialFocus />
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={setDateValue}
+                initialFocus
+              />
             </PopoverContent>
           </Popover>
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image src="/quantity.svg" width={24} height={24} alt="quantityImg" />
+            <Image
+              src="/quantity.svg"
+              width={24}
+              height={24}
+              alt="quantityImg"
+            />
             <p className="pl-1 text-base pl-[15px]">수량</p>
           </div>
           <div className="flex items-center justify-end flex-grow gap-2">
@@ -303,10 +380,13 @@ export default function ItemPost() {
           {/* <Link href="/itemDetail">취소</Link> */}
           취소
         </Button>
-        <Button className="flex-grow bg-personal-blue h-14 text-base" onClick={handleSubmit}>
+        <Button
+          className="flex-grow bg-personal-blue h-14 text-base"
+          onClick={handleSubmit}
+        >
           등록
         </Button>
       </div>
     </div>
-  )
+  );
 }
