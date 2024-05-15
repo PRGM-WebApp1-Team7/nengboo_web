@@ -1,6 +1,6 @@
 import { useUserStore } from "@/store/user";
 
-import { getUserInfo, updateUser } from "@/utils/actions";
+import { getUserStoreInfo, updateUser } from "@/utils/actions";
 import { useEffect } from "react";
 
 export default function MainPage() {
@@ -13,7 +13,7 @@ export default function MainPage() {
   useEffect(() => {
     const initMain = async () => {
       await updateUser();
-      const data = await getUserInfo();
+      const data = await getUserStoreInfo();
       if (!!data) updateUserState(data);
     };
     initMain();
