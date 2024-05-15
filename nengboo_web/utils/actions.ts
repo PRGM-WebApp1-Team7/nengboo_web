@@ -82,10 +82,33 @@ export const getUserInfo = async () => {
       .from("users")
       .select("*")
       .eq("user_id", user.identities[0].identity_data.provider_id);
-
     if (!error) {
       console.log(data);
       return data;
+    } else console.log("getUserInfo >>>", error);
+  }
+};
+
+export const getUserStoreInfo = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!!user && !!user.identities && !!user.identities[0].identity_data) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
+    const { data: ref_id, error: ref_error } = await supabase
+      .from("refrigerators")
+      .select("refrige_id")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
+    if (!error) {
+      const result = {
+        ...data[0],
+        ...ref_id[0],
+      };
+      console.log("result >>>", result);
+      return result;
     } else console.log("getUserInfo >>>", error);
   }
 };
