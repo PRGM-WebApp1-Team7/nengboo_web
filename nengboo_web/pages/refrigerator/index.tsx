@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { updateUser, getUserStoreInfo } from "@/utils/actions";
+import { updateUser, getProductList } from "@/utils/actions";
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
 import SearchBar from "@/components/ui/SearchBar";
@@ -23,7 +23,7 @@ const Refrigerator = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const refrigeId = await getUserStoreInfo();
+        const refrigeId = await getProductList();
         if (refrigeId) {
           const { data: products, error } = await supabase
             .from("products")
