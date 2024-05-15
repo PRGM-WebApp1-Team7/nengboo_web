@@ -82,9 +82,8 @@ export const getUserInfo = async () => {
       .from("users")
       .select("*")
       .eq("user_id", user.identities[0].identity_data.provider_id);
-    if (!error) {
-      console.log(data);
-      return data;
+    console.log(data);
+    return data;
     } else console.log("getUserInfo >>>", error);
   }
 };
