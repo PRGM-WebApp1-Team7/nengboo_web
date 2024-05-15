@@ -73,7 +73,7 @@ export const updateUser = async () => {
 };
 
 // 유저 table에서 로그인한 유저의 db정보를 모두 가져오는 함수
-export const getUserInfo = async () => {
+export const getUserStoreInfo = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
