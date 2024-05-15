@@ -73,6 +73,22 @@ export const updateUser = async () => {
 };
 
 // 유저 table에서 로그인한 유저의 db정보를 모두 가져오는 함수
+export const getUserInfo = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!!user && !!user.identities && !!user.identities[0].identity_data) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("user_id", user.identities[0].identity_data.provider_id);
+    if (!error) {
+      console.log(data);
+      return data;
+    } else console.log("getUserInfo >>>", error);
+  }
+};
+
 export const getUserStoreInfo = async () => {
   const {
     data: { user },
@@ -93,7 +109,7 @@ export const getUserStoreInfo = async () => {
       };
       console.log("result >>>", result);
       return result;
-    } else console.log("getUserInfo >>>", error);
+    } else console.log("getUserStoreInfo >>>", error);
   }
 };
 
