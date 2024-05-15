@@ -54,15 +54,19 @@ const ItemSearch = () => {
 
   const handleSearchSubmit = async (searchTerm: string) => {
     try {
-      const { data: products, error } = await supabase
-        .from("products")
-        .select("*")
-        .filter("product_name", "ilike", `%${searchTerm}%`);
+      const refrigeId = await getProductList();
+      if (refrigeId) {
+        const { data: products, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("refrige_id", refrigeId)
+          .filter("product_name", "ilike", `%${searchTerm}%`);
 
-      if (error) {
-        throw error;
-      } else {
-        setFilteredData(products || []);
+        if (error) {
+          throw error;
+        } else {
+          setFilteredData(products || []);
+        }
       }
     } catch (error) {
       console.error("검색어 불러오는 중 에러: ", error.message);
@@ -104,7 +108,7 @@ const ItemSearch = () => {
             <div
               key={product.product_id}
               className="rounded-lg p-6 flex flex-row  justify-between items-center border border-gray-300"
-              onClick={() => router.push(`/itemDetail?${product.product_id}`)}
+              onClick={() => router.push(`/itemDetail?product_id=${product.product_id}`)}
             >
               <div className="relative items-center w-20 h-20 mr-4">
                 <Image
