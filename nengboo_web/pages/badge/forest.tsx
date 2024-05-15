@@ -25,7 +25,6 @@ const Forest = () => {
     getTotalExp();
   }, []);
 
-  console.log(exp);
   return (
     <div className="grid place-items-center">
       <div className="w-[350px] h-70px] mt-[20px]">

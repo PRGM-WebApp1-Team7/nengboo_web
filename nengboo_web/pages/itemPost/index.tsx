@@ -15,6 +15,7 @@ import { useUserStore } from "@/store/user";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserInfo, updateUser } from "@/utils/actions";
 import { useRouter } from "next/router";
+import { supabase } from "@/utils/supabase";
 
 export default function ItemPost() {
   const [barcode, setBarcode] = useState("");
@@ -167,6 +168,44 @@ export default function ItemPost() {
       product_memo: memo,
       user_id: userData[0].user_id,
     };
+
+    //배지 조건 업데이트
+    if (userData[0].badge_vegetable === false && hashtagsArr.includes("채소")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_vegetable: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    console.log(JSON.stringify(data));
+    if (userData[0].badge_meat === false && hashtagsArr.includes("고기")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_meat: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_fish === false && hashtagsArr.includes("생선")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_fish: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_milk === false && hashtagsArr.includes("유제품")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_milk: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
 
     console.log(JSON.stringify(data));
 
