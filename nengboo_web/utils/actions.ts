@@ -82,8 +82,9 @@ export const getUserInfo = async () => {
       .from("users")
       .select("*")
       .eq("user_id", user.identities[0].identity_data.provider_id);
-    console.log(data);
-    return data;
+    if (!error) {
+      console.log(data);
+      return data;
     } else console.log("getUserInfo >>>", error);
   }
 };
@@ -108,7 +109,7 @@ export const getUserStoreInfo = async () => {
       };
       console.log("result >>>", result);
       return result;
-    } else console.log("getUserInfo >>>", error);
+    } else console.log("getUserStoreInfo >>>", error);
   }
 };
 
