@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
+import { updateUser, getUserStoreInfo } from "@/utils/actions";
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
 import SearchBar from "@/components/ui/SearchBar";
@@ -22,12 +23,14 @@ const Refrigerator = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data: products, error } = await supabase.from("products").select("*");
-        if (error) {
-          throw error;
-        } else {
+        const refrigeId = await getUserStoreInfo();
+        if (refrigeId) {
+          const { data: products, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("refrige_id", refrigeId);
+          if (error) throw error;
           setProducts(products);
-          console.log(products);
         }
       } catch (error) {
         console.error("물품 검색 에러: ", error.message);

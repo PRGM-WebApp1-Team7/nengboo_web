@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
+import { getUserStoreInfo } from "@/utils/actions";
 import SearchBar from "@/components/ui/SearchBar";
 import SortBar from "@/components/ui/sortBar";
 import useDebounce from "@/hooks/useDebouce";
@@ -16,6 +17,26 @@ const ItemSearch = () => {
   const router = useRouter();
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const refrigeId = await getUserStoreInfo();
+        if (refrigeId) {
+          const { data: products, error } = await supabase
+            .from("products")
+            .select("*")
+            .eq("refrige_id", refrigeId);
+          if (error) throw error;
+          setFilteredData(products);
+        }
+      } catch (error) {
+        console.error("물품 검색 에러: ", error.message);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
     if (debouncedSearchTerm) {
       handleSearchSubmit(debouncedSearchTerm);
     } else {
@@ -26,6 +47,7 @@ const ItemSearch = () => {
   useEffect(() => {
     setSearchTerm(router.query.searchTerm);
   }, [router.query]);
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
   };
@@ -69,7 +91,7 @@ const ItemSearch = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen overflow-y-auto scrollbar-hidden">
+    <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen overflow-y-auto overflow-y-hidden; ">
       <SearchBar
         value={searchTerm}
         onChange={handleSearch}
