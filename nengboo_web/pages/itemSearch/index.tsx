@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
-import { getUserStoreInfo } from "@/utils/actions";
+import { getProductList } from "@/utils/actions";
 import SearchBar from "@/components/ui/SearchBar";
 import SortBar from "@/components/ui/sortBar";
 import useDebounce from "@/hooks/useDebouce";
@@ -19,7 +19,7 @@ const ItemSearch = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const refrigeId = await getUserStoreInfo();
+        const refrigeId = await getProductList();
         if (refrigeId) {
           const { data: products, error } = await supabase
             .from("products")
