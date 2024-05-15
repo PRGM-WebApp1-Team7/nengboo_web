@@ -3,8 +3,6 @@ import { sendMessage } from "./message";
 import OpenAI from "openai";
 
 export const googleLogin = async () => {
-  sendMessage({ message: "login" });
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
@@ -19,11 +17,10 @@ export const googleLogin = async () => {
       }/main`,
     },
   });
+  if (!error) sendMessage({ message: "login" });
 };
 
 export const kakaoLogin = async () => {
-  sendMessage({ message: "login" });
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "kakao",
     options: {
@@ -38,6 +35,7 @@ export const kakaoLogin = async () => {
       }/main`,
     },
   });
+  if (!error) sendMessage({ message: "login" });
 };
 
 // 디버깅 용 로그아웃 함수
@@ -155,7 +153,7 @@ export const getProductList = async () => {
         .from("products")
         .select("product_name")
         .eq("refrige_id", ref_id[0].refrige_id)
-        .eq("product_cookable", true);
+        .eq("product_cookable", "ingredients");
 
       if (!error) {
         console.log(data);
@@ -190,6 +188,8 @@ export const getGPTRecipe = async () => {
     temperature: 0,
     max_tokens: 1000,
   });
+  console.log("api", response);
+
   return response.choices[0].message.content;
 };
 

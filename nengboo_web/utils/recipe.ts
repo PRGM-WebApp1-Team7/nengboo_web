@@ -15,9 +15,9 @@ export const parseData = (
   if (instructionsMatch) {
     instructions = instructionsMatch[1].trim().split("\n");
   } else {
-    const instructionsAltMatch = recipeString.match(/조리방법:\n(.+)/s);
+    const instructionsAltMatch = recipeString.match(/조리방법: (.+)/s);
     if (instructionsAltMatch) {
-      instructions = instructionsAltMatch[1].trim().split("\n");
+      instructions = instructionsAltMatch[1].trim().split(". ");
     } else {
       instructions = [];
     }
