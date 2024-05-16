@@ -64,14 +64,8 @@ const Recipe = () => {
       <SubHeader title={"조리방법"} />
       <ul>
         {cook?.map((e) => (
-          <li className="flex items-center space-x-2" key={e}>
-            <Checkbox id="e" key={e} />
-            <label
-              htmlFor="terms1"
-              className="text-neutral-500 text-base font-medium "
-            >
-              {e}
-            </label>
+          <li className="flex items-center space-x-2 mt-2" key={e}>
+            <p className="mt-4 text-neutral-900 text-base font-bold">{e}</p>
           </li>
         ))}
       </ul>
