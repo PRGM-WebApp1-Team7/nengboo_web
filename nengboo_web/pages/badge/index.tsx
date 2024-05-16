@@ -5,13 +5,16 @@ import Link from "next/link";
 import { fetchUserInfo } from "@/utils/actions";
 import { BadgeIcon } from "@/components/badge/badgeIcon";
 import { useRouter } from "next/router";
+import { sendMessage } from "@/utils/message";
 
 const Badge = () => {
   const [isAcheived, setIsacheived] = useState({});
   const router = useRouter();
   useEffect(() => {
+    if (!router.query) return;
     const getAcheiveData = async () => {
       const data = await fetchUserInfo(router.query.user_id);
+
       if (data) {
         setIsacheived({
           attend: data[0].badge_attendance,
@@ -26,7 +29,7 @@ const Badge = () => {
       }
     };
     getAcheiveData();
-  }, []);
+  }, [router]);
 
   const achieveArray = Object.values(isAcheived);
 
