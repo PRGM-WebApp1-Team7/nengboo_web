@@ -14,7 +14,7 @@ export const googleLogin = async () => {
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000"
           : "https://nengboo-web-prgm-webapp1.vercel.app"
-      }/main`,
+      }/refrigerator`,
     },
   });
   if (!error) sendMessage({ message: "login" });
