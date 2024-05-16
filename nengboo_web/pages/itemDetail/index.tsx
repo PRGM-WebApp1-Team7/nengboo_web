@@ -227,7 +227,6 @@ export default function ItemDetail() {
       console.log("badge update fail");
     }
 
-    console.log(JSON.stringify(data));
     if (userData.badge_meat === false && hashtagsArr.includes("고기")) {
       const { data, error } = await supabase
         .from("users")
