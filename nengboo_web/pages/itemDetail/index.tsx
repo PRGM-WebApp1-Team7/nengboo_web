@@ -38,6 +38,7 @@ export default function ItemDetail() {
   );
   const [quantity, setQuantity] = useState(1);
   const [hashtag, setHashTag] = useState("");
+  const [image, setImage] = useState("");
   const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
   const [keeping, setKeeping] = useState("");
   const [memo, setMemo] = useState("");
@@ -71,7 +72,7 @@ export default function ItemDetail() {
           .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
-        console.log("cookable: ", cookable);
+        setImage(data.product_image);
         setCreatedDate(formattedDate);
         setItemNameValue(data.product_name);
         setDateValue(data.product_expiration_date);
@@ -239,7 +240,7 @@ export default function ItemDetail() {
   };
 
   const handleBackClick = () => {
-    router.back();
+    router.push("/refrigerator");
   };
 
   const handleTrashClick = () => {
@@ -311,12 +312,7 @@ export default function ItemDetail() {
         <p className="text-zinc-800 text-xs font-normal">{createdDate}</p>
       </div>
       <div className="flex items-center justify-center">
-        <Image
-          src="/refIcon/dummyImg.svg"
-          width={130}
-          height={135}
-          alt="dummyImg"
-        />
+        <Image src={image} width={130} height={135} alt="dummyImg" />
       </div>
       <div className="px-6 pt-[25px]">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">

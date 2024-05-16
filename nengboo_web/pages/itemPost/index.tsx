@@ -81,7 +81,7 @@ export default function ItemPost() {
   };
 
   const handleBackClick = () => {
-    router.back();
+    router.push("/refrigerator");
   };
 
   const handleSubmit = async () => {
