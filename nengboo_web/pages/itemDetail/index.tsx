@@ -39,6 +39,7 @@ export default function ItemDetail() {
   );
   const [quantity, setQuantity] = useState(1);
   const [hashtag, setHashTag] = useState("");
+  const [image, setImage] = useState("");
   const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
   const [keeping, setKeeping] = useState("");
   const [memo, setMemo] = useState("");
@@ -72,7 +73,14 @@ export default function ItemDetail() {
           .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
-        console.log("cookable: ", cookable);
+        console.log("image : ", data.product_image);
+        if (data.product_image == null) {
+          setImage(
+            "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
+          );
+        } else {
+          setImage(data.product_image);
+        }
         setCreatedDate(formattedDate);
         setItemNameValue(data.product_name);
         setDateValue(data.product_expiration_date);
@@ -209,6 +217,43 @@ export default function ItemDetail() {
 
     console.log("userdata: ", userData);
 
+    //배지 조건 업데이트
+    if (userData.badge_vegetable === false && hashtagsArr.includes("채소")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_vegetable: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData.badge_meat === false && hashtagsArr.includes("고기")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_meat: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData.badge_fish === false && hashtagsArr.includes("생선")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_fish: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData.badge_milk === false && hashtagsArr.includes("유제품")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_milk: true })
+        .eq("user_id", userData.user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
     const data = {
       refrige_id: refId.data?.refrige_id,
       product_name: itemNameValue,
@@ -284,7 +329,7 @@ export default function ItemDetail() {
           <AlertDialogTrigger asChild>
             <div onClick={handleTrashClick} className="cursor-pointer">
               <Image
-                src="/refIcon/delete.svg"
+                src="/refIcon/trash.svg"
                 width={34}
                 height={34}
                 alt="deleteImg"
@@ -316,12 +361,7 @@ export default function ItemDetail() {
         <p className="text-zinc-800 text-xs font-normal">{createdDate}</p>
       </div>
       <div className="flex items-center justify-center">
-        <Image
-          src="/refIcon/dummyImg.svg"
-          width={130}
-          height={135}
-          alt="dummyImg"
-        />
+        <Image src={image} width={130} height={135} alt="dummyImg" />
       </div>
       <div className="px-6 pt-[25px]">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
