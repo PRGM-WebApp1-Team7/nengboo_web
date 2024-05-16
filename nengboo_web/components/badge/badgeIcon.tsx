@@ -9,8 +9,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
+import React, { useEffect, useRef } from "react";
 
 export function BadgeIcon({ id, name, content, fail_content, img, achieved }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    import("@lottiefiles/lottie-player");
+  });
+
   return (
     <AlertDialog>
       {/* 클릭 전 보이는 아이콘 영역 */}
@@ -55,10 +61,24 @@ export function BadgeIcon({ id, name, content, fail_content, img, achieved }) {
               src={img}
               alt="non"
               className={`w-[280] h-[280] ${
-                achieved ? "" : "opacity-50 grayscale"
+                achieved ? "animate-badge-bounce" : "opacity-50 grayscale"
               }`}
               priority
             />
+            {achieved ? (
+              <div className="absolute top-10 -left-10">
+                <lottie-player
+                  id="firstLottie"
+                  ref={ref}
+                  autoplay
+                  mode="normal"
+                  src="https://lottie.host/a7ed2b2d-31ba-4865-9724-469a6df8ef08/lLmQca0xIf.json"
+                  style={{ width: "500px", height: "500px" }}
+                ></lottie-player>
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="mt-[30px] text-center text-neutral-500 text-2xl text-wrap font-medium font-['Pretendard']">
               {achieved ? content : fail_content}
             </div>
