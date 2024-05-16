@@ -13,6 +13,7 @@ import { SubHeader } from "@/components/SubHeader";
 import { useUserStore } from "@/store/user";
 import { sendMessage } from "@/utils/message";
 import { useRouter } from "next/router";
+import Loading from "@/components/loading";
 
 const Recipe = () => {
   const router = useRouter();
@@ -55,7 +56,11 @@ const Recipe = () => {
     <main className="mx-6">
       <TextHeader />
       <div className="flex items-center justify-center">
-        <img className="w-[334px] h-[334px]" src={recipeImage} />
+        {recipeImage ? (
+          <img className="w-[334px] h-[334px]" src={recipeImage} />
+        ) : (
+          <Loading />
+        )}
       </div>
 
       <p className="mt-4 text-neutral-900 text-2xl font-bold">{recipeName}</p>

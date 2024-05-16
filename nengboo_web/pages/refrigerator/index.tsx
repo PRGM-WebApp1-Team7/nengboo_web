@@ -28,7 +28,7 @@ const Refrigerator = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 100);
   const memoizedProducts = useMemo(() => products, [products]);
-
+  console.log("123", filteredProducts);
   useEffect(() => {
     const init = async () => {
       await updateUser();
@@ -126,12 +126,18 @@ const Refrigerator = () => {
             >
               <div>
                 <Image
-                  src={product.image}
+                  src={
+                    product.product_image &&
+                    typeof product.product_image === "string"
+                      ? product.product_image
+                      : "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
+                  }
                   width={150}
                   height={150}
                   alt={product.product_name}
                   className="mx-auto"
                 />
+
                 <div className="flex justify-between mt-2 text-center">
                   <p className="truncate w-32">{product.product_name}</p>
                   <p>

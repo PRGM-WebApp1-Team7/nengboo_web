@@ -7,7 +7,10 @@ export default function Document() {
         id="container"
         className="relative mx-auto h-[200dvh] w-full max-w-[430px] overflow-y-hidden bg-[#ffffff]"
       >
-        <Head />
+        <Head>
+          <meta content="width=device-width, initial-scale=1" name="viewport" />
+        </Head>
+
         <body>
           <Main />
           <NextScript />

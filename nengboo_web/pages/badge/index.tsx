@@ -15,7 +15,7 @@ const Badge = () => {
     const getAcheiveData = async () => {
       const data = await fetchUserInfo(router.query.user_id);
 
-      if (data) {
+      if (data && Array.isArray(data) && data.length > 0) {
         setIsacheived({
           attend: data[0].badge_attendance,
           expday: data[0].badge_expiration_day,

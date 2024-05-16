@@ -197,7 +197,9 @@ export const getGPTRecipe = async (refrige_id: string) => {
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
     dangerouslyAllowBrowser: true,
   });
-
+  if (!parse) {
+    return "";
+  }
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [
