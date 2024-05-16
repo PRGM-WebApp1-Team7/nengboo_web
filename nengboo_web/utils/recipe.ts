@@ -4,6 +4,9 @@ export const parseData = (
   setIngredient: React.Dispatch<React.SetStateAction<string[]>>,
   setCook: React.Dispatch<React.SetStateAction<string[]>>
 ) => {
+  if (!recipeString) {
+    return;
+  }
   const recipeName = recipeString.match(/레시피 이름: (.+)/)![1];
   const ingredients = recipeString.match(/재료: (.+)/)![1].split(", ");
   // const instructions = recipeString

@@ -279,7 +279,7 @@ export default function ItemDetail() {
       if (error) {
         throw new Error("Failed to send data to server");
       } else {
-        router.push("/refrigerator");
+        router.back();
       }
     } catch (error) {
       console.error("Error:", error);
@@ -287,7 +287,7 @@ export default function ItemDetail() {
   };
 
   const handleBackClick = () => {
-    router.push("/refrigerator");
+    router.back();
   };
 
   const handleTrashClick = () => {
