@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/popover";
 import { useUserStore } from "@/store/user";
 import { useToast } from "@/components/ui/use-toast";
-import { getUserStoreInfo, updateUser } from "@/utils/actions";
+import { fetchUserInfo, getUserStoreInfo, updateUser } from "@/utils/actions";
 import { useRouter } from "next/router";
 import { supabase } from "@/utils/supabase";
+import { sendMessage } from "@/utils/message";
 
 export default function ItemPost() {
   const [barcode, setBarcode] = useState("");
@@ -142,7 +143,11 @@ export default function ItemPost() {
 
     //서버에 데이터 전송
     await updateUser();
-    const userData = await getUserStoreInfo();
+    sendMessage({ message: "222" + JSON.stringify(router.query) });
+    const userData = await fetchUserInfo(router.query.user_id);
+    sendMessage({ message: "223" + JSON.stringify(userData) });
+
+    console.log("test : ", router.query.user_id);
     console.log("userData :", userData);
     const data = {
       barcode: barcode,

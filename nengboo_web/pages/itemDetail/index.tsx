@@ -26,7 +26,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getUserStoreInfo, updateUser } from "@/utils/actions";
+import { fetchUserInfo, getUserInfo, updateUser } from "@/utils/actions";
+import { sendMessage } from "@/utils/message";
 
 export default function ItemDetail() {
   const [product, setProduct] = useState(null);
@@ -72,6 +73,7 @@ export default function ItemDetail() {
           .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
+        console.log("image : ", data.product_image);
         if (data.product_image == null) {
           setImage(
             "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
@@ -203,8 +205,17 @@ export default function ItemDetail() {
     }
 
     await updateUser();
-    const userData = await getUserStoreInfo();
-    console.log("userData :", userData);
+    sendMessage({ message: "222" + JSON.stringify(router.query) });
+    const userData = await fetchUserInfo(router.query.user_id);
+    sendMessage({ message: "223" + JSON.stringify(userData) });
+
+    const refId = await supabase
+      .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
+      .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
+      .eq("user_id", userData.user_id)
+      .single();
+
+    console.log("userdata: ", userData);
 
     //배지 조건 업데이트
     if (userData.badge_vegetable === false && hashtagsArr.includes("채소")) {
@@ -216,6 +227,7 @@ export default function ItemDetail() {
       console.log("badge update fail");
     }
 
+    console.log(JSON.stringify(data));
     if (userData.badge_meat === false && hashtagsArr.includes("고기")) {
       const { data, error } = await supabase
         .from("users")
@@ -242,14 +254,6 @@ export default function ItemDetail() {
     } else {
       console.log("badge update fail");
     }
-
-    const refId = await supabase
-      .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
-      .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
-      .eq("user_id", userData.user_id)
-      .single();
-
-    console.log("userdata: ", userData);
 
     const data = {
       refrige_id: refId.data?.refrige_id,
@@ -306,7 +310,9 @@ export default function ItemDetail() {
         throw new Error("Failed to send data to server");
       } else {
         setShowModal(false);
-        router.push("/refrigerator");
+        router.push(
+          `/refrigerator?refrige_id=${router.query.refrige_id}&user_id=${router.query.user_id}`
+        );
       }
     } catch (error) {
       console.error("Error:", error);
