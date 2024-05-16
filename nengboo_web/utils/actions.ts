@@ -121,6 +121,25 @@ export const getUserStoreInfo = async () => {
   }
 };
 
+export const fetchUserStoreInfo = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", user_id);
+  const { data: ref_id, error: ref_error } = await supabase
+    .from("refrigerators")
+    .select("refrige_id")
+    .eq("user_id", user_id);
+  if (!error) {
+    const result = {
+      ...data[0],
+      ...ref_id[0],
+    };
+    console.log("result >>>", result);
+    return result;
+  } else console.log("getUserStoreInfo >>>", error);
+};
+
 // 냉장고 생성
 export const insertRefrige = async () => {
   const {
