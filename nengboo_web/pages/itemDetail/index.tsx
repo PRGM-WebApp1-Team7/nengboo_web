@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getUserInfo, updateUser } from "@/utils/actions";
+import { getUserStoreInfo, updateUser } from "@/utils/actions";
 
 export default function ItemDetail() {
   const [product, setProduct] = useState(null);
@@ -72,7 +72,13 @@ export default function ItemDetail() {
           .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
-        setImage(data.product_image);
+        if (data.product_image == null) {
+          setImage(
+            "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
+          );
+        } else {
+          setImage(data.product_image);
+        }
         setCreatedDate(formattedDate);
         setItemNameValue(data.product_name);
         setDateValue(data.product_expiration_date);
@@ -197,41 +203,42 @@ export default function ItemDetail() {
     }
 
     await updateUser();
-    const userData = await getUserInfo();
+    const userData = await getUserStoreInfo();
+    console.log("userData :", userData);
 
     //배지 조건 업데이트
-    if (userData[0].badge_vegetable === false && hashtagsArr.includes("채소")) {
+    if (userData.badge_vegetable === false && hashtagsArr.includes("채소")) {
       const { data, error } = await supabase
         .from("users")
         .update({ badge_vegetable: true })
-        .eq("user_id", userData[0].user_id);
+        .eq("user_id", userData.user_id);
     } else {
       console.log("badge update fail");
     }
 
-    if (userData[0].badge_meat === false && hashtagsArr.includes("고기")) {
+    if (userData.badge_meat === false && hashtagsArr.includes("고기")) {
       const { data, error } = await supabase
         .from("users")
         .update({ badge_meat: true })
-        .eq("user_id", userData[0].user_id);
+        .eq("user_id", userData.user_id);
     } else {
       console.log("badge update fail");
     }
 
-    if (userData[0].badge_fish === false && hashtagsArr.includes("생선")) {
+    if (userData.badge_fish === false && hashtagsArr.includes("생선")) {
       const { data, error } = await supabase
         .from("users")
         .update({ badge_fish: true })
-        .eq("user_id", userData[0].user_id);
+        .eq("user_id", userData.user_id);
     } else {
       console.log("badge update fail");
     }
 
-    if (userData[0].badge_milk === false && hashtagsArr.includes("유제품")) {
+    if (userData.badge_milk === false && hashtagsArr.includes("유제품")) {
       const { data, error } = await supabase
         .from("users")
         .update({ badge_milk: true })
-        .eq("user_id", userData[0].user_id);
+        .eq("user_id", userData.user_id);
     } else {
       console.log("badge update fail");
     }
@@ -239,7 +246,7 @@ export default function ItemDetail() {
     const refId = await supabase
       .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
       .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
-      .eq("user_id", userData[0].user_id)
+      .eq("user_id", userData.user_id)
       .single();
 
     console.log("userdata: ", userData);
