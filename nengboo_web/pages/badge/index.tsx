@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { BadgeData } from "@/utils/badgeData";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getUserInfo } from "@/utils/actions";
+import { fetchUserInfo } from "@/utils/actions";
 import { BadgeIcon } from "@/components/badge/badgeIcon";
+import { useRouter } from "next/router";
 
 const Badge = () => {
   const [isAcheived, setIsacheived] = useState({});
-
+  const router = useRouter();
   useEffect(() => {
     const getAcheiveData = async () => {
-      const data = await getUserInfo();
+      const data = await fetchUserInfo(router.query.user_id);
       if (data) {
         setIsacheived({
           attend: data[0].badge_attendance,
