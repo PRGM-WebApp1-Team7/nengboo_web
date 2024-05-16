@@ -32,7 +32,7 @@ export const kakaoLogin = async () => {
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000"
           : "https://nengboo-web-prgm-webapp1.vercel.app"
-      }/redirect`,
+      }/refrigerator`,
     },
   });
 };
@@ -150,7 +150,7 @@ export const insertRefrige = async () => {
 };
 
 export const getProductList = async (refrige_id: string) => {
-  sendMessage({ message: "98" + JSON.stringify(refrige_id) });
+  // sendMessage({ message: "98" + JSON.stringify(refrige_id) });
 
   const { data, error } = await supabase
     .from("products")
