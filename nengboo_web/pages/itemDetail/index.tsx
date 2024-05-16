@@ -7,7 +7,11 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import Image from "next/image";
 import Link from "next/link";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useUserStore } from "@/store/user";
 import { supabase } from "@/utils/supabase";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,14 +26,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getUserInfo, updateUser } from "@/utils/actions";
+import { fetchUserInfo, getUserInfo, updateUser } from "@/utils/actions";
+import { sendMessage } from "@/utils/message";
 
 export default function ItemDetail() {
   const [product, setProduct] = useState(null);
   const [createdDate, setCreatedDate] = useState("");
   const [itemNameValue, setItemNameValue] = useState("");
   const [cookable, setCookable] = useState("");
-  const [dateValue, setDateValue] = React.useState<Date | undefined>(new Date());
+  const [dateValue, setDateValue] = React.useState<Date | undefined>(
+    new Date()
+  );
   const [quantity, setQuantity] = useState(1);
   const [hashtag, setHashTag] = useState("");
   const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
@@ -55,9 +62,14 @@ export default function ItemDetail() {
           .single();
 
         const findCreatedDate = new Date(data.product_created_date);
-        const formattedDate = `${findCreatedDate.getFullYear()}-${(findCreatedDate.getMonth() + 1)
+        const formattedDate = `${findCreatedDate.getFullYear()}-${(
+          findCreatedDate.getMonth() + 1
+        )
           .toString()
-          .padStart(2, "0")}-${findCreatedDate.getDate().toString().padStart(2, "0")}`;
+          .padStart(2, "0")}-${findCreatedDate
+          .getDate()
+          .toString()
+          .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
         console.log("cookable: ", cookable);
@@ -117,7 +129,9 @@ export default function ItemDetail() {
   );
 
   const removeHashtag = (indexToRemove: number) => {
-    setHashtagsArr((prevHashtags) => prevHashtags.filter((_, index) => index !== indexToRemove));
+    setHashtagsArr((prevHashtags) =>
+      prevHashtags.filter((_, index) => index !== indexToRemove)
+    );
   };
   const handleSelectChange = (e) => {
     setKeeping(e.target.value);
@@ -183,12 +197,14 @@ export default function ItemDetail() {
     }
 
     await updateUser();
-    const userData = await getUserInfo();
+    sendMessage({ message: "222" + JSON.stringify(router.query) });
+    const userData = await fetchUserInfo(router.query.user_id);
+    sendMessage({ message: "223" + JSON.stringify(userData) });
 
     const refId = await supabase
       .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
       .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
-      .eq("user_id", userData[0].user_id)
+      .eq("user_id", userData.user_id)
       .single();
 
     console.log("userdata: ", userData);
@@ -197,7 +213,10 @@ export default function ItemDetail() {
       refrige_id: refId.data?.refrige_id,
       product_name: itemNameValue,
       product_cookable: cookable,
-      product_expiration_date: format(new Date(dateValue), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+      product_expiration_date: format(
+        new Date(dateValue),
+        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+      ),
       product_quantity: quantity,
       product_type: hashtagsArr.join(","),
       product_frozen_storage: keeping,
@@ -207,7 +226,10 @@ export default function ItemDetail() {
     console.log(JSON.stringify(data));
 
     try {
-      const { error } = await supabase.from("products").update(data).eq("product_id", product_id);
+      const { error } = await supabase
+        .from("products")
+        .update(data)
+        .eq("product_id", product_id);
 
       if (error) {
         throw new Error("Failed to send data to server");
@@ -233,13 +255,18 @@ export default function ItemDetail() {
 
   const handleDelete = async () => {
     try {
-      const { error } = await supabase.from("products").delete().eq("product_id", product_id);
+      const { error } = await supabase
+        .from("products")
+        .delete()
+        .eq("product_id", product_id);
 
       if (error) {
         throw new Error("Failed to send data to server");
       } else {
         setShowModal(false);
-        router.push("/refrigerator");
+        router.push(
+          `/refrigerator?refrige_id=${router.query.refrige_id}&user_id=${router.query.user_id}`
+        );
       }
     } catch (error) {
       console.error("Error:", error);
@@ -256,7 +283,12 @@ export default function ItemDetail() {
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <div onClick={handleTrashClick} className="cursor-pointer">
-              <Image src="/refIcon/delete.svg" width={34} height={34} alt="deleteImg" />
+              <Image
+                src="/refIcon/delete.svg"
+                width={34}
+                height={34}
+                alt="deleteImg"
+              />
             </div>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -264,10 +296,16 @@ export default function ItemDetail() {
               <AlertDialogTitle>상품을 삭제하시겠습니까?</AlertDialogTitle>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={handleCancel} className="bg-personal-gray">
+              <AlertDialogCancel
+                onClick={handleCancel}
+                className="bg-personal-gray"
+              >
                 취소
               </AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-personal-blue">
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-personal-blue"
+              >
                 삭제
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -278,11 +316,21 @@ export default function ItemDetail() {
         <p className="text-zinc-800 text-xs font-normal">{createdDate}</p>
       </div>
       <div className="flex items-center justify-center">
-        <Image src="/refIcon/dummyImg.svg" width={130} height={135} alt="dummyImg" />
+        <Image
+          src="/refIcon/dummyImg.svg"
+          width={130}
+          height={135}
+          alt="dummyImg"
+        />
       </div>
       <div className="px-6 pt-[25px]">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/refIcon/itemName.svg" width={24} height={24} alt="itemNameImg" />
+          <Image
+            src="/refIcon/itemName.svg"
+            width={24}
+            height={24}
+            alt="itemNameImg"
+          />
           <Input
             className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
             type="text"
@@ -302,17 +350,31 @@ export default function ItemDetail() {
                   !dateValue && "text-muted-foreground"
                 )}
               >
-                {dateValue ? format(dateValue, "yyyy-MM-dd") : <span>날짜를 선택하세요.</span>}
+                {dateValue ? (
+                  format(dateValue, "yyyy-MM-dd")
+                ) : (
+                  <span>날짜를 선택하세요.</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={dateValue} onSelect={setDateValue} initialFocus />
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={setDateValue}
+                initialFocus
+              />
             </PopoverContent>
           </Popover>
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image src="/refIcon/quantity.svg" width={24} height={24} alt="quantityImg" />
+            <Image
+              src="/refIcon/quantity.svg"
+              width={24}
+              height={24}
+              alt="quantityImg"
+            />
             <p className="pl-1 text-base pl-[15px]">수량</p>
           </div>
           <div className="flex items-center justify-end flex-grow gap-2">
@@ -360,7 +422,12 @@ export default function ItemDetail() {
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image src="/refIcon/keep.svg" width={24} height={24} alt="keepImg" />
+            <Image
+              src="/refIcon/keep.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
             <p className="text-base pl-[15px]">보관 방법</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -387,7 +454,12 @@ export default function ItemDetail() {
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
           <div className="flex items-center">
-            <Image src="/refIcon/category.svg" width={24} height={24} alt="keepImg" />
+            <Image
+              src="/refIcon/category.svg"
+              width={24}
+              height={24}
+              alt="keepImg"
+            />
             <p className="text-base pl-[15px]">상품 카테고리</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -406,7 +478,10 @@ export default function ItemDetail() {
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
           <Link href="/refrigerator">취소</Link>
         </Button>
-        <Button className="flex-grow bg-personal-blue h-14 text-base" onClick={handleSubmit}>
+        <Button
+          className="flex-grow bg-personal-blue h-14 text-base"
+          onClick={handleSubmit}
+        >
           저장
         </Button>
       </div>
