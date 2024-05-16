@@ -8,9 +8,11 @@ export interface Message {
   message: string;
 }
 export const sendMessage = (data: Message) => {
-  if (
-    typeof window !== undefined &&
-    window.hasOwnProperty("ReactNativeWebView")
-  )
-    window.ReactNativeWebView?.postMessage(JSON.stringify(data));
+  try {
+    if (
+      typeof window !== undefined &&
+      window.hasOwnProperty("ReactNativeWebView")
+    )
+      window.ReactNativeWebView?.postMessage(JSON.stringify(data));
+  } catch (error) {}
 };

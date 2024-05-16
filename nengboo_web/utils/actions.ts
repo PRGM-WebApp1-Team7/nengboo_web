@@ -32,10 +32,9 @@ export const kakaoLogin = async () => {
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000"
           : "https://nengboo-web-prgm-webapp1.vercel.app"
-      }/main`,
+      }/redirect`,
     },
   });
-  if (!error) sendMessage({ message: "login" });
 };
 
 // 디버깅 용 로그아웃 함수
@@ -85,6 +84,17 @@ export const getUserInfo = async () => {
       return data;
     } else console.log("getUserInfo >>>", error);
   }
+};
+
+export const fetchUserInfo = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", user_id);
+  if (!error) {
+    console.log(data);
+    return data;
+  } else console.log("fetchUserInfo >>>", error);
 };
 
 export const getUserStoreInfo = async () => {
@@ -139,33 +149,25 @@ export const insertRefrige = async () => {
   }
 };
 
-export const getProductList = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!!user && !!user.identities && !!user.identities[0].identity_data) {
-    const { data: ref_id, error } = await supabase
-      .from("refrigerators")
-      .select("refrige_id")
-      .eq("user_id", user.identities[0].identity_data.provider_id);
-    if (!!ref_id) {
-      const { data, error } = await supabase
-        .from("products")
-        .select("product_name")
-        .eq("refrige_id", ref_id[0].refrige_id)
-        .eq("product_cookable", "ingredients");
+export const getProductList = async (refrige_id: string) => {
+  sendMessage({ message: "98" + JSON.stringify(refrige_id) });
 
-      if (!error) {
-        console.log(data);
-        return data;
-      } else console.log("getProdcutList >>>", error);
-    } else console.log("getProdcutList (ref_id) >>>", error);
-  } else console.log("getProdcutList >>> userError");
+  const { data, error } = await supabase
+    .from("products")
+    .select("product_name")
+    .eq("refrige_id", refrige_id)
+    .eq("product_cookable", "ingredients");
+  sendMessage({ message: "97" + JSON.stringify(data) });
+
+  if (!error) {
+    console.log(data);
+    return data;
+  } else console.log("getProdcutList >>>", error);
 };
 
-export const getGPTRecipe = async () => {
+export const getGPTRecipe = async (refrige_id: string) => {
   let parse = "";
-  const data = await getProductList();
+  const data = await getProductList(refrige_id);
   console.log("data >>>", data);
   if (!!data) {
     data.map((e) => {
