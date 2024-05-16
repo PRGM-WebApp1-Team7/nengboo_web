@@ -237,14 +237,14 @@ export default function ItemPost() {
         <div className="py-9 px-5 gap-4 flex items-center border-solid border border-border-color rounded-lg">
           <div>
             <Image
-              src="/dummyImg.svg"
+              src="https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
               width={100}
               height={100}
               alt="dummyImg"
             />
           </div>
           <div>
-            <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
+            {/* <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
               <Input
                 className="w-[200px] h-[28px] shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 placeholder="바코드를 입력해주세요."
@@ -257,7 +257,7 @@ export default function ItemPost() {
                 }}
                 required
               />
-            </div>
+            </div> */}
 
             <div className="flex w-[228px] h-[40.16px] bg-white rounded-lg border border-zinc-300 mb-2.5 text-sm">
               <Input
