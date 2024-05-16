@@ -220,7 +220,7 @@ export default function ItemDetail() {
   };
 
   const handleBackClick = () => {
-    router.back();
+    router.push("/refrigerator");
   };
 
   const handleTrashClick = () => {
