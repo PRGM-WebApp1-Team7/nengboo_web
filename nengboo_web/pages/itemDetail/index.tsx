@@ -199,6 +199,43 @@ export default function ItemDetail() {
     await updateUser();
     const userData = await getUserInfo();
 
+    //배지 조건 업데이트
+    if (userData[0].badge_vegetable === false && hashtagsArr.includes("채소")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_vegetable: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_meat === false && hashtagsArr.includes("고기")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_meat: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_fish === false && hashtagsArr.includes("생선")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_fish: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_milk === false && hashtagsArr.includes("유제품")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_milk: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
     const refId = await supabase
       .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
       .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )

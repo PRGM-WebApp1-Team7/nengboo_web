@@ -1,3 +1,4 @@
+import { sendMessage } from "@/utils/message";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -18,7 +19,14 @@ export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       user: null,
-      updateUserState: (user: User) => set(() => ({ user })),
+      updateUserState: (user: User) =>
+        set(() => {
+          // sendMessage({ message: "USER" + JSON.stringify(user) });
+          sendMessage({ message: JSON.stringify(user) });
+          return {
+            user,
+          };
+        }),
     }),
     { name: "user-storage" }
   )

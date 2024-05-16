@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { updateUser, getUserStoreInfo } from "@/utils/actions";
+import { useUserStore } from "@/store/user";
+import { getProductList, getUserStoreInfo, updateUser } from "@/utils/actions";
 import { supabase } from "@/utils/supabase";
 import calculateDday from "@/utils/calcDday";
 import SearchBar from "@/components/ui/SearchBar";
@@ -11,7 +12,8 @@ import useDebounce from "@/hooks/useDebouce";
 import coldImg from "@/public/cold.svg";
 
 const Refrigerator = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const { user, updateUserState } = useUserStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [sortBy, setSortBy] = useState("유통기한 임박 순");
@@ -23,14 +25,16 @@ const Refrigerator = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const refrigeId = await getUserStoreInfo();
-        if (refrigeId) {
+        await updateUser();
+        const data = await getUserStoreInfo();
+        if (data) {
           const { data: products, error } = await supabase
             .from("products")
             .select("*")
-            .eq("refrige_id", refrigeId);
+            .eq("refrige_id", data.refrige_id);
           if (error) throw error;
           setProducts(products);
+          updateUserState(data);
         }
       } catch (error) {
         console.error("물품 검색 에러: ", error.message);
@@ -45,7 +49,7 @@ const Refrigerator = () => {
       product.product_name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
 
-    const sortedProducts = sortProducts(filtered, sortBy);
+    const sortedProducts: any = sortProducts(filtered, sortBy);
     setFilteredProducts(sortedProducts);
   }, [debouncedSearchTerm, memoizedProducts, sortBy]);
 
@@ -87,7 +91,7 @@ const Refrigerator = () => {
             <div
               key={product.product_id}
               className={`flex flex-col ${product.product_id !== 0 ? "mt-30" : ""}`}
-              onClick={() => router.push(`/itemDetail?${product.product_id}`)}
+              onClick={() => router.push(`/itemDetail?product_id=${product.product_id}`)}
             >
               <div>
                 <Image

@@ -18,16 +18,31 @@ const SortBar = ({ onSortChange }) => {
 
   const fetchProductsCount = async () => {
     try {
-      const { count } = await supabase.from("products").select("product_id", { count: "exact" });
-
-      if (count !== null) {
-        setProductsCount(count);
+      const { data: user } = await supabase.auth.getUser();
+      if (user && user.identities && user.identities[0].identity_data) {
+        const { data: ref_id } = await supabase
+          .from("refrigerators")
+          .select("refrige_id")
+          .eq("user_id", user.identities[0].identity_data.provider_id)
+          .single();
+        if (ref_id) {
+          const { count } = await supabase
+            .from("products")
+            .select("product_id", { count: "exact" })
+            .eq("refrige_id", ref_id.refrige_id);
+          if (count !== null) {
+            setProductsCount(count);
+          }
+        } else {
+          console.error("냉장고 ID를 찾을 수 없습니다.");
+        }
+      } else {
+        console.error("사용자 정보를 찾을 수 없습니다.");
       }
     } catch (error) {
       console.error("상품 개수 가져오기 에러:", error.message);
     }
   };
-
   useEffect(() => {
     fetchProductsCount();
   }, []);

@@ -6,23 +6,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useUserStore } from "@/store/user";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserInfo, updateUser } from "@/utils/actions";
 import { useRouter } from "next/router";
+import { supabase } from "@/utils/supabase";
 
 export default function ItemPost() {
   const [barcode, setBarcode] = useState("");
   const [itemNameValue, setItemNameValue] = useState("");
   const [cookable, setCookable] = useState("ingredients");
-  const [dateValue, setDateValue] = React.useState<Date | undefined>(
-    new Date()
-  );
+  const [dateValue, setDateValue] = React.useState<Date | undefined>(new Date());
   const [quantity, setQuantity] = useState(1);
   const [hashtag, setHashTag] = useState("");
   const [hashtagsArr, setHashtagsArr] = useState<string[]>([]);
@@ -65,13 +60,9 @@ export default function ItemPost() {
   );
 
   const removeHashtag = (indexToRemove: number) => {
-    setHashtagsArr((prevHashtags) =>
-      prevHashtags.filter((_, index) => index !== indexToRemove)
-    );
+    setHashtagsArr((prevHashtags) => prevHashtags.filter((_, index) => index !== indexToRemove));
   };
-  const handleSelectChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  const handleSelectChange = (e: { target: { value: React.SetStateAction<string> } }) => {
     // 선택된 값으로 keeping 상태를 업데이트합니다.
     setKeeping(e.target.value);
   };
@@ -157,16 +148,51 @@ export default function ItemPost() {
       barcode: barcode,
       product_name: itemNameValue,
       product_cookable: cookable,
-      product_expiration_date: format(
-        new Date(dateValue),
-        "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
-      ),
+      product_expiration_date: format(new Date(dateValue), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
       product_quantity: quantity,
       product_type: hashtagsArr,
       product_frozen_storage: keeping,
       product_memo: memo,
       user_id: userData[0].user_id,
     };
+
+    //배지 조건 업데이트
+    if (userData[0].badge_vegetable === false && hashtagsArr.includes("채소")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_vegetable: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    console.log(JSON.stringify(data));
+    if (userData[0].badge_meat === false && hashtagsArr.includes("고기")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_meat: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_fish === false && hashtagsArr.includes("생선")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_fish: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
+
+    if (userData[0].badge_milk === false && hashtagsArr.includes("유제품")) {
+      const { data, error } = await supabase
+        .from("users")
+        .update({ badge_milk: true })
+        .eq("user_id", userData[0].user_id);
+    } else {
+      console.log("badge update fail");
+    }
 
     console.log(JSON.stringify(data));
 
@@ -207,12 +233,7 @@ export default function ItemPost() {
       <div className="px-6 pt-5">
         <div className="py-9 px-5 gap-4 flex items-center border-solid border border-border-color rounded-lg">
           <div>
-            <Image
-              src="/dummyImg.svg"
-              width={100}
-              height={100}
-              alt="dummyImg"
-            />
+            <Image src="/dummyImg.svg" width={100} height={100} alt="dummyImg" />
           </div>
           <div>
             <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
@@ -239,10 +260,7 @@ export default function ItemPost() {
                 onChange={(e) => setItemNameValue(e.target.value)}
                 required
               />
-              <div
-                className="flex items-center justify-end flex-grow pr-2"
-                onClick={handleCancel}
-              >
+              <div className="flex items-center justify-end flex-grow pr-2" onClick={handleCancel}>
                 <Image
                   src="/refIcon/cancel.svg"
                   width={24}
@@ -256,9 +274,7 @@ export default function ItemPost() {
         </div>
       </div>
       <div className="px-6 py-4">
-        <h2 className="text-neutral-700 text-sm font-normaltext-sm">
-          상품 정보
-        </h2>
+        <h2 className="text-neutral-700 text-sm font-normaltext-sm">상품 정보</h2>
       </div>
       <div className="px-6">
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
@@ -272,31 +288,17 @@ export default function ItemPost() {
                   !dateValue && "text-muted-foreground"
                 )}
               >
-                {dateValue ? (
-                  format(dateValue, "yyyy-MM-dd")
-                ) : (
-                  <span>날짜를 선택하세요.</span>
-                )}
+                {dateValue ? format(dateValue, "yyyy-MM-dd") : <span>날짜를 선택하세요.</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={dateValue}
-                onSelect={setDateValue}
-                initialFocus
-              />
+              <Calendar mode="single" selected={dateValue} onSelect={setDateValue} initialFocus />
             </PopoverContent>
           </Popover>
         </div>
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image
-              src="/refIcon/quantity.svg"
-              width={24}
-              height={24}
-              alt="quantityImg"
-            />
+            <Image src="/refIcon/quantity.svg" width={24} height={24} alt="quantityImg" />
             <p className="pl-1 text-base pl-[15px]">수량</p>
           </div>
           <div className="flex items-center justify-end flex-grow gap-2">
@@ -345,12 +347,7 @@ export default function ItemPost() {
 
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
-            <Image
-              src="/refIcon/keep.svg"
-              width={24}
-              height={24}
-              alt="keepImg"
-            />
+            <Image src="/refIcon/keep.svg" width={24} height={24} alt="keepImg" />
             <p className="text-base pl-[15px]">보관 방법</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -378,12 +375,7 @@ export default function ItemPost() {
 
         <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
           <div className="flex items-center">
-            <Image
-              src="/refIcon/category.svg"
-              width={24}
-              height={24}
-              alt="keepImg"
-            />
+            <Image src="/refIcon/category.svg" width={24} height={24} alt="keepImg" />
             <p className="text-base pl-[15px]">상품 카테고리</p>
           </div>
           <div className="flex items-center justify-end flex-grow">
@@ -403,10 +395,7 @@ export default function ItemPost() {
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
           <Link href="/refrigerator">취소</Link>
         </Button>
-        <Button
-          className="flex-grow bg-personal-blue h-14 text-base"
-          onClick={handleSubmit}
-        >
+        <Button className="flex-grow bg-personal-blue h-14 text-base" onClick={handleSubmit}>
           등록
         </Button>
       </div>
