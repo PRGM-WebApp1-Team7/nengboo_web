@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserInfo, updateUser } from "@/utils/actions";
 import { supabase } from "@/utils/supabase";
-import { useUserStore } from "@/store/user";
 
 export default async function handler(
   req: NextApiRequest,

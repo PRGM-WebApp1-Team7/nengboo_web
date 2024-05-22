@@ -1,12 +1,9 @@
-import { useRouter } from "next/router";
-
-export const TextHeader = () => {
-  const router = useRouter();
+export const TextHeader = (title: { title: string }) => {
   return (
-    <div className="flex mt-16 mb-14 justify-center">
+    <header className="flex mt-16 mb-14 justify-center">
       <p className="text-neutral-900 text-2xl font-bold text-center">
-        AI 추천 레시피
+        {title.title}
       </p>
-    </div>
+    </header>
   );
 };

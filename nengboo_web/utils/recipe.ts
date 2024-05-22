@@ -9,10 +9,7 @@ export const parseData = (
   }
   const recipeName = recipeString.match(/레시피 이름: (.+)/)![1];
   const ingredients = recipeString.match(/재료: (.+)/)![1].split(", ");
-  // const instructions = recipeString
-  //   .match(/조리방법: \n(.+)/s)![1]
-  //   .trim()
-  //   .split("\n");
+
   let instructions: any;
   const instructionsMatch = recipeString.match(/조리방법: \n(.+)/s);
   if (instructionsMatch) {

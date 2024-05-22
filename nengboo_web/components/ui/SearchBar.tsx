@@ -14,14 +14,6 @@ interface SearchBarProps {
 const SearchBar = ({ onChange, onSubmit, value }: SearchBarProps) => {
   const router = useRouter();
 
-  // const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   onChange(event);
-  // };
-
-  // const handleSearchSubmit = () => {
-  //   onSearch(value);
-  // };
-
   const handleGoBack = () => {
     if (window.history.length > 1) {
       window.history.back();
@@ -31,9 +23,15 @@ const SearchBar = ({ onChange, onSubmit, value }: SearchBarProps) => {
   };
 
   return (
-    <div className="flex items-center">
+    <section className="flex items-center">
       <div onClick={handleGoBack}>
-        <Image src={arrowLeft} alt="BackButton" className="mr-2" width={9} height={18} />
+        <Image
+          src={arrowLeft}
+          alt="BackButton"
+          className="mr-2"
+          width={9}
+          height={18}
+        />
       </div>
 
       <div className="relative flex-grow">
@@ -58,7 +56,7 @@ const SearchBar = ({ onChange, onSubmit, value }: SearchBarProps) => {
           className="absolute right-3 top-1/2 transform -translate-y-1/2"
         />
       </div>
-    </div>
+    </section>
   );
 };
 

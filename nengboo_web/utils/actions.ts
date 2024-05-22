@@ -1,24 +1,5 @@
 import { supabase } from "@/utils/supabase";
-import { sendMessage } from "./message";
 import OpenAI from "openai";
-
-export const googleLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      queryParams: {
-        access_type: "offline",
-        prompt: "consent",
-      },
-      redirectTo: `${
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : "https://nengboo-web-prgm-webapp1.vercel.app"
-      }/refrigerator`,
-    },
-  });
-  if (!error) sendMessage({ message: "login" });
-};
 
 export const kakaoLogin = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -92,7 +73,6 @@ export const fetchUserInfo = async (user_id: string) => {
     .select("*")
     .eq("user_id", user_id);
   if (!error) {
-    console.log(data);
     return data;
   } else console.log("fetchUserInfo >>>", error);
 };
@@ -135,9 +115,8 @@ export const fetchUserStoreInfo = async (user_id: string) => {
       ...data[0],
       ...ref_id[0],
     };
-    console.log("result >>>", result);
     return result;
-  } else console.log("getUserStoreInfo >>>", error);
+  } else console.log("fetchUserStoreInfo >>>", error);
 };
 
 // 냉장고 생성
@@ -169,14 +148,11 @@ export const insertRefrige = async () => {
 };
 
 export const getProductList = async (refrige_id: string) => {
-  // sendMessage({ message: "98" + JSON.stringify(refrige_id) });
-
   const { data, error } = await supabase
     .from("products")
     .select("product_name")
     .eq("refrige_id", refrige_id)
     .eq("product_cookable", "ingredients");
-  sendMessage({ message: "97" + JSON.stringify(data) });
 
   if (!error) {
     console.log(data);
@@ -211,8 +187,6 @@ export const getGPTRecipe = async (refrige_id: string) => {
     temperature: 0,
     max_tokens: 1000,
   });
-  console.log("api", response);
-
   return response.choices[0].message.content;
 };
 
@@ -246,6 +220,5 @@ export const getRecipeImage = async (query: string) => {
   );
   const responseJson = await response.json();
   const result = responseJson.results;
-  console.log("result >>>", result);
   return result[0].urls.full;
 };

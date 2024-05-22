@@ -4,9 +4,7 @@ import { useRouter } from "next/router";
 
 import { useUserStore } from "@/store/user";
 import {
-  fetchUserInfo,
   fetchUserStoreInfo,
-  getProductList,
   getUserStoreInfo,
   updateUser,
 } from "@/utils/actions";
@@ -16,7 +14,6 @@ import SearchBar from "@/components/ui/SearchBar";
 import SortBar from "@/components/ui/sortBar";
 import useDebounce from "@/hooks/useDebouce";
 import coldImg from "@/public/cold.svg";
-import { sendMessage } from "@/utils/message";
 
 const Refrigerator = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -28,7 +25,7 @@ const Refrigerator = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 100);
   const memoizedProducts = useMemo(() => products, [products]);
-  console.log("123", filteredProducts);
+
   useEffect(() => {
     const init = async () => {
       await updateUser();
@@ -41,15 +38,13 @@ const Refrigerator = () => {
     if (!router.query) return;
     const fetchProducts = async () => {
       try {
-        sendMessage({ message: "332" + JSON.stringify(router) });
         const data = await fetchUserStoreInfo(router.query.user_id);
-        sendMessage({ message: "333" + JSON.stringify(data) });
+
         if (data) {
           const { data: products, error } = await supabase
             .from("products")
             .select("*")
             .eq("refrige_id", data.refrige_id);
-          sendMessage({ message: "335" + JSON.stringify(products) });
 
           if (error) throw error;
           setProducts(products);
@@ -105,97 +100,99 @@ const Refrigerator = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen overflow-y-auto scrollbar-hidden">
-      <SearchBar
-        value={searchTerm}
-        onChange={handleSearchChange}
-        onSubmit={handleSearchSubmit}
-      />
-      <SortBar onSortChange={handleSortChange} />
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 mt-8">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.product_id}
-              className={`flex flex-col ${
-                product.product_id !== 0 ? "mt-30" : ""
-              }`}
-              onClick={() =>
-                router.push(`/itemDetail?product_id=${product.product_id}`)
-              }
-            >
-              <div>
-                <Image
-                  src={
-                    product.product_image &&
-                    typeof product.product_image === "string"
-                      ? product.product_image
-                      : "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
-                  }
-                  width={150}
-                  height={150}
-                  alt={product.product_name}
-                  className="mx-auto"
-                />
+    <main className="relative mx-auto h-[100dvh] w-full max-w-[430px] overflow-y-hidden bg-[#ffffff] ">
+      <section className="container mx-auto px-4 py-8 flex flex-col min-h-screen overflow-y-auto scrollbar-hidden">
+        <SearchBar
+          value={searchTerm}
+          onChange={handleSearchChange}
+          onSubmit={handleSearchSubmit}
+        />
+        <SortBar onSortChange={handleSortChange} />
+        {filteredProducts.length > 0 ? (
+          <ul className="grid grid-cols-2 gap-4 mt-8">
+            {filteredProducts.map((product) => (
+              <li
+                key={product.product_id}
+                className={`flex flex-col ${
+                  product.product_id !== 0 ? "mt-30" : ""
+                }`}
+                onClick={() =>
+                  router.push(`/itemDetail?product_id=${product.product_id}`)
+                }
+              >
+                <figcaption>
+                  <Image
+                    src={
+                      product.product_image &&
+                      typeof product.product_image === "string"
+                        ? product.product_image
+                        : "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
+                    }
+                    width={150}
+                    height={150}
+                    alt={product.product_name}
+                    className="mx-auto"
+                  />
 
-                <div className="flex justify-between mt-2 text-center">
-                  <p className="truncate w-32">{product.product_name}</p>
-                  <p>
-                    수량:{" "}
-                    {product.product_quantity !== null
-                      ? product.product_quantity
-                      : "N/A"}
-                  </p>
-                </div>
-                <div className="flex justify-between mt-2 text-center">
-                  {product.product_expiration_date && (
-                    <p>{product.product_expiration_date} 까지</p>
-                  )}
-                  <p
-                    className={`${
-                      (calculateDday(product.product_expiration_date).includes(
-                        "D-"
-                      ) &&
-                        parseInt(
-                          calculateDday(
-                            product.product_expiration_date
-                          ).substring(2)
-                        ) <= 7) ||
-                      calculateDday(product.product_expiration_date).includes(
-                        "D+"
-                      )
-                        ? "text-red-500"
-                        : ""
-                    }`}
-                  >
-                    {calculateDday(product.product_expiration_date)}
-                  </p>
-                </div>
-              </div>
+                  <div className="flex justify-between mt-2 text-center">
+                    <p className="truncate w-32">{product.product_name}</p>
+                    <p>
+                      수량:{" "}
+                      {product.product_quantity !== null
+                        ? product.product_quantity
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div className="flex justify-between mt-2 text-center">
+                    {product.product_expiration_date && (
+                      <p>{product.product_expiration_date} 까지</p>
+                    )}
+                    <p
+                      className={`${
+                        (calculateDday(
+                          product.product_expiration_date
+                        ).includes("D-") &&
+                          parseInt(
+                            calculateDday(
+                              product.product_expiration_date
+                            ).substring(2)
+                          ) <= 7) ||
+                        calculateDday(product.product_expiration_date).includes(
+                          "D+"
+                        )
+                          ? "text-red-500"
+                          : ""
+                      }`}
+                    >
+                      {calculateDday(product.product_expiration_date)}
+                    </p>
+                  </div>
+                </figcaption>
+              </li>
+            ))}
+          </ul>
+        ) : products.length === 0 ? (
+          <section className="flex flex-col items-center justify-center my-auto">
+            <Image
+              src={coldImg}
+              alt="ColdBgImg"
+              width={290}
+              height={290}
+              className="mx-auto"
+            />
+            <div className="mt-12 text-xl text-center text-black">
+              <p>냉장고가 비어있어요.</p>
+              <p>상품을 등록해주세요.</p>
             </div>
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center my-auto">
-          <Image
-            src={coldImg}
-            alt="ColdBgImg"
-            width={290}
-            height={290}
-            className="mx-auto"
-          />
-          <div className="mt-12 text-xl text-center text-black">
-            <p>냉장고가 비어있어요.</p>
-            <p>상품을 등록해주세요.</p>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-8 flex flex-col text-center text-black">
-          <p className="mb-4 text-gray-400 text-left">검색 결과</p>
-          <p className="text-left">검색 결과가 없습니다.</p>
-        </div>
-      )}
-    </div>
+          </section>
+        ) : (
+          <section className="mt-8 flex flex-col text-center text-black">
+            <p className="mb-4 text-gray-400 text-left">검색 결과</p>
+            <p className="text-left">검색 결과가 없습니다.</p>
+          </section>
+        )}
+      </section>
+    </main>
   );
 };
 
