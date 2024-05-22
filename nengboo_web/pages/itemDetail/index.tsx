@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useUserStore } from "@/store/user";
+
 import { supabase } from "@/utils/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -20,14 +20,12 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { fetchUserInfo, getUserInfo, updateUser } from "@/utils/actions";
-import { sendMessage } from "@/utils/message";
+import { fetchUserInfo, updateUser } from "@/utils/actions";
 
 export default function ItemDetail() {
   const [product, setProduct] = useState(null);
@@ -49,12 +47,10 @@ export default function ItemDetail() {
   const router = useRouter();
 
   const { product_id } = router.query;
-  console.log(product_id);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        console.log("cookable: ", cookable);
         // Supabase에서 데이터 조회
         const { data, error } = await supabase
           .from("products")
@@ -73,7 +69,6 @@ export default function ItemDetail() {
           .padStart(2, "0")}`;
 
         setCookable(data.product_cookable); // 불린 값으로 설정
-        console.log("image : ", data.product_image);
         if (data.product_image == null) {
           setImage(
             "https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
@@ -205,17 +200,13 @@ export default function ItemDetail() {
     }
 
     await updateUser();
-    sendMessage({ message: "222" + JSON.stringify(router.query) });
     const userData = await fetchUserInfo(router.query.user_id);
-    sendMessage({ message: "223" + JSON.stringify(userData) });
 
     const refId = await supabase
-      .from("refrigerators") // TODO 냉장고 테이블로 바꾼다 ( refrigerators )
-      .select("refrige_id") // TODO 냉장고 테이블의 id값 ( refrige_id )
+      .from("refrigerators")
+      .select("refrige_id")
       .eq("user_id", userData.user_id)
       .single();
-
-    console.log("userdata: ", userData);
 
     //배지 조건 업데이트
     if (userData.badge_vegetable === false && hashtagsArr.includes("채소")) {
@@ -268,7 +259,6 @@ export default function ItemDetail() {
       product_memo: memo,
       product_updated_date: new Date().toISOString(),
     };
-    console.log(JSON.stringify(data));
 
     try {
       const { error } = await supabase
@@ -319,22 +309,22 @@ export default function ItemDetail() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between px-6 mt-1">
-        <div className=" cursor-pointer" onClick={handleBackClick}>
+    <main className="relative mx-auto h-[120dvh] w-full max-w-[430px] overflow-y-hidden bg-[#ffffff]">
+      <header className="flex items-center justify-between px-6 mt-10">
+        <figure className=" cursor-pointer" onClick={handleBackClick}>
           <Image src="/refIcon/back.svg" width={9} height={18} alt="backImg" />
-        </div>
+        </figure>
         <h2 className="text-neutral-900 text-2xl font-bold">상품 상세정보</h2>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <div onClick={handleTrashClick} className="cursor-pointer">
+            <figure onClick={handleTrashClick} className="cursor-pointer">
               <Image
                 src="/refIcon/trash.svg"
                 width={34}
                 height={34}
                 alt="deleteImg"
               />
-            </div>
+            </figure>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -356,165 +346,190 @@ export default function ItemDetail() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
-      <div className="pt-[15px] pb-[10px] px-6">
-        <p className="text-zinc-800 text-xs font-normal">{createdDate}</p>
-      </div>
-      <div className="flex items-center justify-center">
-        <Image src={image} width={130} height={135} alt="dummyImg" />
-      </div>
-      <div className="px-6 pt-[25px]">
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image
-            src="/refIcon/itemName.svg"
-            width={24}
-            height={24}
-            alt="itemNameImg"
-          />
-          <Input
-            className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-            type="text"
-            placeholder="상품명을 입력해주세요."
-            value={itemNameValue}
-            onChange={(e) => setItemNameValue(e.target.value)}
-          />
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/refIcon/date.svg" width={24} height={24} alt="dateImg" />
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-[280px] justify-start text-left font-normal border-none",
-                  !dateValue && "text-muted-foreground"
-                )}
-              >
-                {dateValue ? (
-                  format(dateValue, "yyyy-MM-dd")
-                ) : (
-                  <span>날짜를 선택하세요.</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={dateValue}
-                onSelect={setDateValue}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <div className="flex items-center">
-            <Image
-              src="/refIcon/quantity.svg"
-              width={24}
-              height={24}
-              alt="quantityImg"
-            />
-            <p className="pl-1 text-base pl-[15px]">수량</p>
-          </div>
-          <div className="flex items-center justify-end flex-grow gap-2">
-            <Image
-              src="/refIcon/minus.svg"
-              width={24}
-              height={24}
-              alt="minusImg"
-              onClick={handleDecrement}
-              className="cursor-pointer"
-            />
-            <p>{quantity}</p>
-            <Image
-              src="/refIcon/plus.svg"
-              width={24}
-              height={24}
-              alt="plusImg"
-              onClick={handleIncrement}
-              className="cursor-pointer"
-            />
-          </div>
-        </div>
+      </header>
 
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <div className="flex items-center w-full ">
-            <Image src="/refIcon/tag.svg" width={24} height={24} alt="tagImg" />
-            {hashtagsArr.map((tag, index) => (
-              <div
-                key={index}
-                className=" flex items-center justify-center w-auto h-[30px] px-3 bg-personal-blue rounded-[15px] cursor-pointer text-white text-base font-normal whitespace-normal mr-2"
-                onClick={() => removeHashtag(index)}
-              >
-                {tag}
-              </div>
-            ))}
+      <p className="pt-[15px] pb-[10px] px-6 text-zinc-800 text-xs font-normal">
+        {createdDate}
+      </p>
+
+      <figure className="flex items-center justify-center">
+        <Image src={image} width={130} height={135} alt="dummyImg" />
+      </figure>
+
+      <section className="px-6 pt-[25px]">
+        <ul>
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+            <Image
+              src="/refIcon/itemName.svg"
+              width={24}
+              height={24}
+              alt="itemNameImg"
+            />
             <Input
-              className="flex-grow w-0 border-none text-base focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+              className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
               type="text"
-              value={hashtag}
-              onChange={onChangeHashtag}
-              onKeyUp={onKeyUp}
-              placeholder="해시태그 입력"
+              placeholder="상품명을 입력해주세요."
+              value={itemNameValue}
+              onChange={(e) => setItemNameValue(e.target.value)}
             />
-          </div>
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <div className="flex items-center">
+          </li>
+
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
             <Image
-              src="/refIcon/keep.svg"
+              src="/refIcon/date.svg"
               width={24}
               height={24}
-              alt="keepImg"
+              alt="dateImg"
             />
-            <p className="text-base pl-[15px]">보관 방법</p>
-          </div>
-          <div className="flex items-center justify-end flex-grow">
-            <select
-              onChange={handleSelectChange}
-              value={keeping}
-              className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
-            >
-              <option value="coldStorage">냉장 보관</option>
-              <option value="frozenStorage">냉동 보관</option>
-              <option value="roomTemperatureStorage">실온 보관</option>
-            </select>
-          </div>
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
-          <Image src="/refIcon/memo.svg" width={24} height={24} alt="memoImg" />
-          <Input
-            className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-            placeholder="메모를 입력해주세요."
-            type="text"
-            value={memo}
-            onChange={handleMemoChange}
-          />
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
-          <div className="flex items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-[280px] justify-start text-left font-normal border-none",
+                    !dateValue && "text-muted-foreground"
+                  )}
+                >
+                  {dateValue ? (
+                    format(dateValue, "yyyy-MM-dd")
+                  ) : (
+                    <p>날짜를 선택하세요.</p>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={dateValue}
+                  onSelect={setDateValue}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </li>
+
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+            <div className="flex items-center">
+              <Image
+                src="/refIcon/quantity.svg"
+                width={24}
+                height={24}
+                alt="quantityImg"
+              />
+              <p className="pl-1 text-base pl-[15px]">수량</p>
+            </div>
+            <div className="flex items-center justify-end flex-grow gap-2">
+              <Image
+                src="/refIcon/minus.svg"
+                width={24}
+                height={24}
+                alt="minusImg"
+                onClick={handleDecrement}
+                className="cursor-pointer"
+              />
+              <p>{quantity}</p>
+              <Image
+                src="/refIcon/plus.svg"
+                width={24}
+                height={24}
+                alt="plusImg"
+                onClick={handleIncrement}
+                className="cursor-pointer"
+              />
+            </div>
+          </li>
+
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+            <div className="flex items-center w-full ">
+              <Image
+                src="/refIcon/tag.svg"
+                width={24}
+                height={24}
+                alt="tagImg"
+              />
+              {hashtagsArr.map((tag, index) => (
+                <div
+                  key={index}
+                  className=" flex items-center justify-center w-auto h-[30px] px-3 bg-personal-blue rounded-[15px] cursor-pointer text-white text-base font-normal whitespace-normal mr-2"
+                  onClick={() => removeHashtag(index)}
+                >
+                  {tag}
+                </div>
+              ))}
+              <Input
+                className="flex-grow w-0 border-none text-base focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                type="text"
+                value={hashtag}
+                onChange={onChangeHashtag}
+                onKeyUp={onKeyUp}
+                placeholder="해시태그 입력"
+              />
+            </div>
+          </li>
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+            <div className="flex items-center">
+              <Image
+                src="/refIcon/keep.svg"
+                width={24}
+                height={24}
+                alt="keepImg"
+              />
+              <p className="text-base pl-[15px]">보관 방법</p>
+            </div>
+            <div className="flex items-center justify-end flex-grow">
+              <select
+                onChange={handleSelectChange}
+                value={keeping}
+                className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
+              >
+                <option value="coldStorage">냉장 보관</option>
+                <option value="frozenStorage">냉동 보관</option>
+                <option value="roomTemperatureStorage">실온 보관</option>
+              </select>
+            </div>
+          </li>
+
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
             <Image
-              src="/refIcon/category.svg"
+              src="/refIcon/memo.svg"
               width={24}
               height={24}
-              alt="keepImg"
+              alt="memoImg"
             />
-            <p className="text-base pl-[15px]">상품 카테고리</p>
-          </div>
-          <div className="flex items-center justify-end flex-grow">
-            <select
-              onChange={handleCookableChange}
-              value={cookable}
-              className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
-            >
-              <option value="ingredients">식재료</option>
-              <option value="finished">완제품</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">
+            <Input
+              className="w-auto shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+              placeholder="메모를 입력해주세요."
+              type="text"
+              value={memo}
+              onChange={handleMemoChange}
+            />
+          </li>
+
+          <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
+            <div className="flex items-center">
+              <Image
+                src="/refIcon/category.svg"
+                width={24}
+                height={24}
+                alt="keepImg"
+              />
+              <p className="text-base pl-[15px]">상품 카테고리</p>
+            </div>
+            <div className="flex items-center justify-end flex-grow">
+              <select
+                onChange={handleCookableChange}
+                value={cookable}
+                className="w-[112px] h-[37px] border-none text-xs focus-visible:ring-0"
+              >
+                <option value="ingredients">식재료</option>
+                <option value="finished">완제품</option>
+              </select>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section className="flex items-center justify-center px-6 gap-2 pt-[52px]">
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
           <Link href="/refrigerator">취소</Link>
         </Button>
@@ -524,7 +539,7 @@ export default function ItemDetail() {
         >
           저장
         </Button>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

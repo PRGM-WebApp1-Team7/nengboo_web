@@ -21,7 +21,6 @@ export const useUserStore = create<UserState>()(
       user: null,
       updateUserState: (user: User) =>
         set(() => {
-          // sendMessage({ message: "USER" + JSON.stringify(user) });
           sendMessage({ message: JSON.stringify(user) });
           return {
             user,

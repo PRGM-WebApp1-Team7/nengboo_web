@@ -5,7 +5,6 @@ import Link from "next/link";
 import { fetchUserInfo } from "@/utils/actions";
 import { BadgeIcon } from "@/components/badge/badgeIcon";
 import { useRouter } from "next/router";
-import { sendMessage } from "@/utils/message";
 
 const Badge = () => {
   const [isAcheived, setIsacheived] = useState({});
@@ -34,8 +33,8 @@ const Badge = () => {
   const achieveArray = Object.values(isAcheived);
 
   return (
-    <div>
-      <div className="w-[428px] h-[600px] bg-white grid grid-cols-3 justify-items-center">
+    <main className="relative mx-auto h-[100dvh] w-full max-w-[430px] overflow-y-hidden bg-[#ffffff]">
+      <article className="w-[100%] h-[600px] bg-white grid grid-cols-3 justify-items-center mt-10">
         {BadgeData.map((data, index) => (
           <BadgeIcon
             key={index}
@@ -47,15 +46,15 @@ const Badge = () => {
             achieved={achieveArray[index]}
           />
         ))}
-      </div>
-      <div className="w-[100%] h-[50px] grid place-items-center">
+      </article>
+      <section className="w-[100%] h-[50px] grid place-items-center">
         <Link href={"/badge/forest"} className="w-[70%]">
           <Button className="w-[100%] bg-sky-500 hover:bg-sky-600">
             나무 보러가기
           </Button>
         </Link>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

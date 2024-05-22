@@ -54,14 +54,20 @@ const SortBar = ({ onSortChange }) => {
     setSortedProducts(sortedProducts);
   };
 
-  const sortProducts = async (sortOption) => {
+  const sortProducts = async (sortOption: string) => {
     try {
       let sortedProducts = [];
 
       if (sortOption === "등록 순") {
-        sortedProducts = await supabase.from("products").select("*").order("product_id");
+        sortedProducts = await supabase
+          .from("products")
+          .select("*")
+          .order("product_id");
       } else if (sortOption === "이름 순") {
-        sortedProducts = await supabase.from("products").select("*").order("product_name");
+        sortedProducts = await supabase
+          .from("products")
+          .select("*")
+          .order("product_name");
       } else if (sortOption === "유통기한 임박 순") {
         sortedProducts = await supabase
           .from("products")
@@ -76,10 +82,13 @@ const SortBar = ({ onSortChange }) => {
   };
 
   return (
-    <div className="flex flex-row justify-between mt-4 text-sm">
+    <section className="flex flex-row justify-between mt-4 text-sm">
       <div>
         <p>
-          상품 <span className="font-medium text-personal-blue ">{productsCount}</span>
+          상품{" "}
+          <span className="font-medium text-personal-blue ">
+            {productsCount}
+          </span>
         </p>
       </div>
       <DropdownMenu>
@@ -110,7 +119,7 @@ const SortBar = ({ onSortChange }) => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </section>
   );
 };
 

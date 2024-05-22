@@ -11,12 +11,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useUserStore } from "@/store/user";
 import { useToast } from "@/components/ui/use-toast";
-import { fetchUserInfo, getUserStoreInfo, updateUser } from "@/utils/actions";
+import { fetchUserInfo, updateUser } from "@/utils/actions";
 import { useRouter } from "next/router";
 import { supabase } from "@/utils/supabase";
-import { sendMessage } from "@/utils/message";
 
 export default function ItemPost() {
   const [barcode, setBarcode] = useState("");
@@ -143,9 +141,7 @@ export default function ItemPost() {
 
     //서버에 데이터 전송
     await updateUser();
-    sendMessage({ message: "222" + JSON.stringify(router.query) });
     const userData = await fetchUserInfo(router.query.user_id);
-    sendMessage({ message: "223" + JSON.stringify(userData) });
 
     console.log("test : ", router.query.user_id);
     console.log("userData :", userData);
@@ -202,8 +198,6 @@ export default function ItemPost() {
       console.log("badge update fail");
     }
 
-    console.log(JSON.stringify(data));
-
     try {
       const response = await fetch("/api/itemPost", {
         method: "POST",
@@ -224,8 +218,8 @@ export default function ItemPost() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between px-6 mt-1">
+    <main className="relative mx-auto h-[100dvh] w-full max-w-[430px] overflow-y-hidden bg-[#ffffff]">
+      <header className="flex mx-6 mt-16 mb-14 items-center">
         <div className="cursor-pointer" onClick={handleBackClick}>
           <Image
             src="/refIcon/back.svg"
@@ -235,35 +229,24 @@ export default function ItemPost() {
             className="w-[9px] h-[18px] relative"
           />
         </div>
-        <h2 className="text-neutral-900 text-2xl font-bold">상품 등록</h2>
-        <div></div>
-      </div>
-      <div className="px-6 pt-5">
+        <div className="relative grow justify-center">
+          <div className="text-neutral-900 text-2xl font-bold text-center">
+            상품 등록
+          </div>
+        </div>
+      </header>
+
+      <section className="px-6 pt-5">
         <div className="py-9 px-5 gap-4 flex items-center border-solid border border-border-color rounded-lg">
-          <div>
+          <figure>
             <Image
               src="https://whrmaertzkkanlgksexz.supabase.co/storage/v1/object/public/images/emotion2.png"
               width={100}
               height={100}
               alt="dummyImg"
             />
-          </div>
+          </figure>
           <div>
-            {/* <div className="flex items-center w-[228px] h-[30.12px] bg-white rounded-lg border border-zinc-300 mb-1.5 text-sm">
-              <Input
-                className="w-[200px] h-[28px] shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                placeholder="바코드를 입력해주세요."
-                type="text"
-                value={barcode}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const newValue = value.replace(/[^\d]/g, "");
-                  setBarcode(newValue);
-                }}
-                required
-              />
-            </div> */}
-
             <div className="flex w-[228px] h-[40.16px] bg-white rounded-lg border border-zinc-300 mb-2.5 text-sm">
               <Input
                 className="w-[190px] h-auto shrink-0 pl-2.5 border-white focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
@@ -288,14 +271,16 @@ export default function ItemPost() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
       <div className="px-6 py-4">
         <h2 className="text-neutral-700 text-sm font-normaltext-sm">
           상품 정보
         </h2>
       </div>
-      <div className="px-6">
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+
+      <ul className="px-6">
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <Image src="/refIcon/date.svg" width={24} height={24} alt="dateImg" />
           <Popover>
             <PopoverTrigger asChild>
@@ -322,8 +307,9 @@ export default function ItemPost() {
               />
             </PopoverContent>
           </Popover>
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+        </li>
+
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
             <Image
               src="/refIcon/quantity.svg"
@@ -352,9 +338,9 @@ export default function ItemPost() {
               className="cursor-pointer"
             />
           </div>
-        </div>
+        </li>
 
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center w-full ">
             <Image src="/refIcon/tag.svg" width={24} height={24} alt="tagImg" />
             {hashtagsArr.map((tag, index) => (
@@ -375,9 +361,9 @@ export default function ItemPost() {
               placeholder="해시태그 입력"
             />
           </div>
-        </div>
+        </li>
 
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 mb-2.5">
           <div className="flex items-center">
             <Image
               src="/refIcon/keep.svg"
@@ -398,8 +384,9 @@ export default function ItemPost() {
               <option value="roomTemperatureStorage">실온 보관</option>
             </select>
           </div>
-        </div>
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300  px-2.5 py-2.5 mb-2.5">
+        </li>
+
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300  px-2.5 py-2.5 mb-2.5">
           <Image src="/refIcon/memo.svg" width={24} height={24} alt="memoImg" />
           <Input
             className="w-[330px] shrink-0 border-none text-base pl-[15px] focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
@@ -408,9 +395,9 @@ export default function ItemPost() {
             value={memo}
             onChange={handleMemoChange}
           />
-        </div>
+        </li>
 
-        <div className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
+        <li className="flex w-full h-[52px] max-w-sm items-center rounded-lg border border-zinc-300 px-2.5 py-2.5 ">
           <div className="flex items-center">
             <Image
               src="/refIcon/category.svg"
@@ -430,10 +417,10 @@ export default function ItemPost() {
               <option value="finished">완제품</option>
             </select>
           </div>
-        </div>
-      </div>
+        </li>
+      </ul>
 
-      <div className="flex items-center justify-center px-6 gap-2 pt-[52px]">
+      <section className="flex items-center justify-center px-6 gap-2 pt-[52px]">
         <Button className="flex-grow bg-personal-gray text-btn-cancel-text h-14 text-base">
           <Link href="/refrigerator">취소</Link>
         </Button>
@@ -443,7 +430,7 @@ export default function ItemPost() {
         >
           등록
         </Button>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
